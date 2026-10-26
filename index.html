@@ -112,12 +112,20 @@
 
           <div class="demo-stage-grid">
             <div class="canvas-wrapper">
-              <canvas id="game-canvas" width="960" height="540" tabindex="0" aria-label="Playable 3D Game Slice: The Boiling Iron Rig"></canvas>
+              <iframe
+                id="godot-wasm-frame"
+                src="./godot/index.html"
+                title="Godot 4.3 WebAssembly Universal Client"
+                style="width: 100%; height: 540px; border: 0; display: block; background: #0f172a; border-radius: 10px 10px 0 0;"
+                allow="autoplay; fullscreen; gamepad"
+              ></iframe>
+              <canvas id="game-canvas" width="960" height="540" tabindex="0" style="display: none;" aria-label="4-Quadrant PuppetServer Vision Inspector"></canvas>
               <div class="canvas-hud-bar">
-                <span><strong>Controls:</strong> <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Move</span>
-                <span><kbd>E</kbd> Extract Coal Ore (Metal Shield)</span>
-                <span><kbd>Space</kbd> Cast Earth Lance</span>
-                <span><kbd>Q</kbd> Toggle Quad-Debug</span>
+                <span><strong>Godot 4.3 WASM Engine:</strong> Click viewport to focus</span>
+                <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Move</span>
+                <span><kbd>E</kbd> Extract CoalVent_01 (Metal Shield)</span>
+                <span><kbd>Space</kbd> Cast Ability</span>
+                <span><kbd>Q</kbd> Toggle Top-Down QA Cam</span>
               </div>
             </div>
 
@@ -228,10 +236,13 @@
                 </div>
                 <div class="demo-toolbar">
                   <button type="button" id="btn-mount-bundle" class="btn btn-primary">
-                    ▶ Mount Bundle in Live 3D Client
+                    ▶ Mount .pck &amp; Hot-Reload in Godot 4 Engine
+                  </button>
+                  <button type="button" id="btn-download-pck" class="btn btn-secondary">
+                    📦 Download Compiled .pck
                   </button>
                   <button type="button" id="btn-download-bundle" class="btn btn-secondary">
-                    ⬇ Download Config Bundle (.json)
+                    ⬇ Download Config (.json)
                   </button>
                 </div>
               </div>

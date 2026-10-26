@@ -14,6 +14,8 @@ interface GeneratedConfigBundle extends RuntimeConfigBundle {
   inference_model: string;
   live_llm_generated: boolean;
   total_tokens_used: number;
+  pck_size_bytes?: number;
+  pck_base64?: string;
   files: Record<string, unknown>;
 }
 
@@ -238,7 +240,26 @@ function renderBuildStages(job: BuildJob, currentBundle: GeneratedConfigBundle):
     bundleTitle.textContent = `Generated Config Bundle: ${currentBundle.bundle_id} — ${currentBundle.zone_title}`;
   }
   if (bundleViewer) {
-    bundleViewer.textContent = JSON.stringify(currentBundle, null, 2);
+    const displayCopy = { ...currentBundle };
+    if (displayCopy.pck_base64 && displayCopy.pck_base64.length > 96) {
+      displayCopy.pck_base64 = `${displayCopy.pck_base64.slice(0, 96)}... [${displayCopy.pck_size_bytes || 36640} bytes binary .pck]`;
+    }
+    bundleViewer.textContent = JSON.stringify(displayCopy, null, 2);
+  }
+}
+
+function mountBundleIntoGodotWasm(bundle: GeneratedConfigBundle): void {
+  const frame = document.getElementById('godot-wasm-frame') as HTMLIFrameElement | null;
+  if (!frame || !frame.contentWindow) return;
+  const win = frame.contentWindow as Window & {
+    playableMountPckBase64?: (realmId: string, b64: string, jsonStr: string) => void;
+    playableHotReloadBundle?: (jsonStr: string) => void;
+  };
+  const jsonStr = JSON.stringify(bundle);
+  if (bundle.pck_base64 && typeof win.playableMountPckBase64 === 'function') {
+    win.playableMountPckBase64(bundle.bundle_id, bundle.pck_base64, jsonStr);
+  } else if (typeof win.playableHotReloadBundle === 'function') {
+    win.playableHotReloadBundle(jsonStr);
   }
 }
 
@@ -326,7 +347,21 @@ async function initApp(): Promise<void> {
 
   // Wire Demo Controls
   document.getElementById('btn-toggle-quad')?.addEventListener('click', () => {
-    demo.toggleQuadDebug();
+    const frame = document.getElementById('godot-wasm-frame') as HTMLIFrameElement | null;
+    const canvasEl = document.getElementById('game-canvas') as HTMLCanvasElement | null;
+    if (frame && canvasEl) {
+      const showingQuad = canvasEl.style.display !== 'none';
+      if (showingQuad) {
+        canvasEl.style.display = 'none';
+        frame.style.display = 'block';
+      } else {
+        frame.style.display = 'none';
+        canvasEl.style.display = 'block';
+        demo.quadDebugMode = true;
+      }
+    } else {
+      demo.toggleQuadDebug();
+    }
   });
   document.getElementById('btn-extract-coal')?.addEventListener('click', () => {
     demo.extractCoalAndShield();
@@ -347,11 +382,31 @@ async function initApp(): Promise<void> {
 
   // Mount & Download Config Bundle buttons
   document.getElementById('btn-mount-bundle')?.addEventListener('click', () => {
+    mountBundleIntoGodotWasm(latestBundle);
     demo.mountConfigBundle(latestBundle, latestRoomCode);
     if (earthLanceBtn) {
       earthLanceBtn.textContent = `⚡ Cast ${latestBundle.primary_ability_name} (${latestBundle.primary_ability_damage} DMG)`;
     }
     document.getElementById('playable-demo')?.scrollIntoView({ behavior: 'smooth' });
+  });
+
+  document.getElementById('btn-download-pck')?.addEventListener('click', () => {
+    if (latestBundle.pck_base64) {
+      const binStr = atob(latestBundle.pck_base64);
+      const bytes = new Uint8Array(binStr.length);
+      for (let i = 0; i < binStr.length; i++) {
+        bytes[i] = binStr.charCodeAt(i);
+      }
+      const blob = new Blob([bytes], { type: 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${latestBundle.bundle_id}.pck`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } else {
+      window.open('./godot/index.pck', '_blank');
+    }
   });
 
   document.getElementById('btn-download-bundle')?.addEventListener('click', () => {
@@ -491,6 +546,7 @@ async function initApp(): Promise<void> {
       latestBundle = job.config_bundle || DEFAULT_CONFIG_BUNDLE;
       latestRoomCode = job.preview_room_code;
       renderBuildStages(job, latestBundle);
+      mountBundleIntoGodotWasm(latestBundle);
       demo.mountConfigBundle(latestBundle, latestRoomCode);
       if (earthLanceBtn) {
         earthLanceBtn.textContent = `⚡ Cast ${latestBundle.primary_ability_name} (${latestBundle.primary_ability_damage} DMG)`;
