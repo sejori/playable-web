@@ -41,7 +41,7 @@ jobs:
       - name: Build playable-web
         run: pnpm run build
         env:
-          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || 'https://playable-server-658050940120.europe-west2.run.app' }}
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || 'https://playable-server-yy32pk5s3q-nw.a.run.app' }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

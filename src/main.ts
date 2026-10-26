@@ -44,7 +44,7 @@ interface RealmRoomInfo {
 
 const API_BASE: string =
   (import.meta as unknown as { env?: Record<string, string> }).env?.VITE_API_BASE_URL ||
-  'http://127.0.0.1:8080';
+  'https://playable-server-yy32pk5s3q-nw.a.run.app';
 
 const FALLBACK_CARTRIDGES: CartridgeInfo[] = [
   {
