@@ -219,6 +219,34 @@ function setupDialogLightDismissFallback(dialog: HTMLDialogElement): void {
   }
 }
 
+function showServerAlert(message: string, severity: 'warning' | 'error' = 'warning'): void {
+  const statusPill = document.getElementById('server-status-pill');
+  if (statusPill) {
+    statusPill.textContent = severity === 'error' ? 'Insufficient Credits' : 'Server Warning';
+    statusPill.classList.add('status-warning');
+  }
+
+  let banner = document.getElementById('api-warning-banner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'api-warning-banner';
+    banner.setAttribute('role', 'alert');
+    banner.setAttribute('aria-live', 'assertive');
+    document.body.appendChild(banner);
+  }
+  banner.className = `api-warning-banner ${severity === 'error' ? 'api-error-banner' : ''}`;
+  banner.innerHTML = `
+    <div>
+      <strong>${severity === 'error' ? '⛔ Action Blocked' : '⚠️ playable-server Notice'}:</strong>
+      <span>${message}</span>
+    </div>
+    <button type="button" class="btn-close" aria-label="Dismiss notification">✕</button>
+  `;
+  banner.querySelector('.btn-close')?.addEventListener('click', () => {
+    banner?.remove();
+  });
+}
+
 async function fetchJsonOrFallback<T>(path: string, init: RequestInit | undefined, fallback: T): Promise<T> {
   try {
     const res = await fetch(`${API_BASE}${path}`, init);
@@ -834,30 +862,43 @@ async function initApp(): Promise<void> {
     const input = document.getElementById('room-code-input') as HTMLInputElement;
     const feedback = document.getElementById('room-join-feedback') as HTMLElement;
     input.value = code;
-    const joined = await fetchJsonOrFallback(
-      '/api/rooms/join',
-      {
+    try {
+      const res = await fetch(`${API_BASE}/api/rooms/join`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ room_code: code }),
-      },
-      {
-        status: 'CONNECTED',
-        woke_from_zero: code === 'OSRS-9012',
-        wake_time_ms: 285,
-        sandbox_mount_path: `user://realms/${code.toLowerCase()}/patch.pck`,
+      });
+      if (res.status === 402) {
+        showServerAlert('Insufficient Credits (HTTP 402 Payment Required): Unable to wake or join realm.', 'error');
+        feedback.innerHTML = `<strong>Insufficient Credits (402):</strong> Workspace credits exhausted while joining <strong>#${code}</strong>.`;
+        return;
       }
-    );
-    latestRoomCode = code;
-    updateNativeClientCallout(latestBundle, latestRoomCode);
-    renderShowcaseChapter(activeChapter);
-    feedback.innerHTML = `Staged <strong>#${code}</strong> (${joined.wake_time_ms}ms wake) — Launch via <code>playable://join/${code}</code> or CLI`;
-    appendTelemetry({
-      event: 'REALM_ROOM_STAGED',
-      room_code: code,
-      wake_time_ms: joined.wake_time_ms,
-      sandbox_mount_path: joined.sandbox_mount_path,
-    });
+      if (!res.ok) {
+        showServerAlert(
+          `playable-server returned HTTP ${res.status} for POST /api/rooms/join (#${code}). Room not staged.`,
+          'warning'
+        );
+        feedback.innerHTML = `<strong>Warning (HTTP ${res.status}):</strong> Room <strong>#${code}</strong> not found on server.`;
+        return;
+      }
+      const joined = (await res.json()) as { wake_time_ms: number; sandbox_mount_path: string };
+      latestRoomCode = code;
+      updateNativeClientCallout(latestBundle, latestRoomCode);
+      renderShowcaseChapter(activeChapter);
+      feedback.innerHTML = `Staged <strong>#${code}</strong> (${joined.wake_time_ms}ms wake) � Launch via <code>playable://join/${code}</code> or CLI`;
+      appendTelemetry({
+        event: 'REALM_ROOM_STAGED',
+        room_code: code,
+        wake_time_ms: joined.wake_time_ms,
+        sandbox_mount_path: joined.sandbox_mount_path,
+      });
+    } catch {
+      showServerAlert(
+        `playable-server was unreachable for POST /api/rooms/join (#${code}). Room not staged.`,
+        'warning'
+      );
+      feedback.innerHTML = `<strong>Warning (playable-server unreachable):</strong> could not stage <strong>#${code}</strong>.`;
+    }
   };
 
   renderRoomsList(rooms, joinRoomByCode);
@@ -875,6 +916,18 @@ async function initApp(): Promise<void> {
     latestBundle = initialBuilds[0].config_bundle || DEFAULT_CONFIG_BUNDLE;
     latestRoomCode = initialBuilds[0].preview_room_code;
     renderBuildStages(initialBuilds[0], latestBundle);
+    // keep HEAD pck fetch for list responses that redact pck_base64
+    if (!latestBundle.pck_base64 && initialBuilds[0].build_id) {
+      const pckDetail = await fetchJsonOrFallback<{ pck_base64?: string; pck_size_bytes?: number }>(
+        `/api/builds/${initialBuilds[0].build_id}/pck`,
+        undefined,
+        {}
+      );
+      if (pckDetail.pck_base64) {
+        latestBundle.pck_base64 = pckDetail.pck_base64;
+        latestBundle.pck_size_bytes = pckDetail.pck_size_bytes;
+      }
+    }
     updateNativeClientCallout(latestBundle, latestRoomCode);
     renderShowcaseChapter(activeChapter);
   } else {
@@ -937,14 +990,57 @@ async function initApp(): Promise<void> {
       submitBtn.textContent = 'Running Doubleword & QA Pipeline...';
     }
     try {
-      const job = await fetchJsonOrFallback<BuildJob>(
-        '/api/builds',
-        {
+      let job: BuildJob | null = null;
+      try {
+        const res = await fetch(`${API_BASE}/api/builds`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ prompt: promptText, cartridge_id: cartridgeId }),
-        },
-        {
+        });
+
+        if (res.status === 402) {
+          let errDetail = 'Insufficient Credits: 3 credits are required to run the build pipeline.';
+          try {
+            const errJson = (await res.json()) as {
+              error?: string;
+              credits_remaining?: number;
+              required?: number;
+            };
+            if (typeof errJson.credits_remaining === 'number') {
+              const creditsEl = document.getElementById('credits-remaining');
+              if (creditsEl) {
+                creditsEl.textContent = `${errJson.credits_remaining} / 150`;
+              }
+              errDetail = `Insufficient Credits: ${errJson.credits_remaining} remaining (${errJson.required ?? 3} required).`;
+            }
+          } catch {
+            // Keep default 402 message
+          }
+          showServerAlert(errDetail, 'error');
+          const banner = document.getElementById('build-result-banner');
+          if (banner) {
+            banner.innerHTML = `<div><strong>⛔ Insufficient Credits (HTTP 402):</strong> ${errDetail}</div>`;
+          }
+          return;
+        }
+
+        if (!res.ok) {
+          showServerAlert(
+            `playable-server returned HTTP ${res.status} on POST /api/builds. Falling back to local preview bundle.`,
+            'warning'
+          );
+        } else {
+          job = (await res.json()) as BuildJob;
+        }
+      } catch {
+        showServerAlert(
+          'playable-server was unreachable for POST /api/builds. Falling back to local preview bundle.',
+          'warning'
+        );
+      }
+
+      if (!job) {
+        job = {
           build_id: `bld_${Math.floor(1000 + Math.random() * 9000)}`,
           prompt: promptText,
           cartridge_id: cartridgeId,
@@ -956,8 +1052,8 @@ async function initApp(): Promise<void> {
           status: 'COMPLETED',
           stages: [],
           config_bundle: DEFAULT_CONFIG_BUNDLE,
-        }
-      );
+        };
+      }
 
       latestBundle = job.config_bundle || DEFAULT_CONFIG_BUNDLE;
       latestRoomCode = job.preview_room_code;
