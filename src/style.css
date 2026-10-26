@@ -800,3 +800,34 @@ dialog.site-dialog::backdrop {
     grid-template-columns: 1fr;
   }
 }
+
+
+.status-pill.status-warning {
+  background: rgba(245, 158, 11, 0.16);
+  color: var(--accent-amber);
+  border-color: rgba(245, 158, 11, 0.45);
+}
+
+.api-warning-banner {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  z-index: 100;
+  max-width: 460px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.85rem;
+  padding: 0.85rem 1.1rem;
+  border-radius: 0.65rem;
+  background: rgba(30, 41, 59, 0.96);
+  border: 1px solid var(--accent-amber);
+  color: #fde68a;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.55);
+  font-size: 0.84rem;
+}
+
+.api-warning-banner.api-error-banner {
+  border-color: #ef4444;
+  color: #fecaca;
+}
