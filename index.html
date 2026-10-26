@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>playable.gg — Open-Core AI-Native 3D Game Studio &amp; Cross-Platform Realm Host</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a href="#top" class="brand">
+          <span class="brand-mark">▶</span>
+          <span class="brand-name">playable<span class="brand-tld">.gg</span></span>
+          <span class="brand-badge">Godot 4.7+ • Jolt 3D • Open-Core</span>
+        </a>
+        <nav class="site-nav" aria-label="Primary Navigation">
+          <a href="#playable-demo">Live 3D Demo</a>
+          <a href="#creator-studio">Creator Studio</a>
+          <a href="#cartridges">6 Starter Cartridges</a>
+          <a href="#pricing">Pricing &amp; Eject</a>
+        </nav>
+        <div class="header-actions">
+          <span id="server-status-pill" class="status-pill status-online">Engine Ready</span>
+          <button type="button" id="btn-open-launcher" class="btn btn-secondary">Download Launcher (£0)</button>
+          <a href="#creator-studio" class="btn btn-primary">Build a Realm</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="top">
+      <!-- HERO SECTION -->
+      <section class="hero-section">
+        <div class="container hero-grid">
+          <div class="hero-copy">
+            <div class="eyebrow">ONE SIGNED LAUNCHER • INFINITE .PCK REALMS</div>
+            <h1>Cloud-Hosted 3D Multiplayer Game Studio Built on Godot 4.7+</h1>
+            <p class="hero-lead">
+              Build, modify, and host persistent or co-op 3D worlds across 6 genre cartridges from the web,
+              two-way synced GitHub branches, or in-game controller voice prompts. Friends join any realm
+              via 6-digit Room Code for <strong>£0.00</strong>.
+            </p>
+            <div class="hero-cta-row">
+              <a href="#playable-demo" class="btn btn-primary btn-lg">Play Embedded 3D Slice</a>
+              <a href="#creator-studio" class="btn btn-secondary btn-lg">Try Prompt-to-Realm Pipeline</a>
+            </div>
+            <div class="hero-metrics">
+              <div class="metric-card">
+                <span class="metric-val">15–50 MB</span>
+                <span class="metric-label">Sandboxed <code>.pck</code> Stream</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-val">~300 ms</span>
+                <span class="metric-label">Scale-to-Zero Realm Wake</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-val">10x Speed</span>
+                <span class="metric-label">Automated Headless Bot QA</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-val">100% MIT</span>
+                <span class="metric-label">Client &amp; Commercial Eject</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-card">
+            <div class="card-header-bar">
+              <span class="dot dot-red"></span>
+              <span class="dot dot-amber"></span>
+              <span class="dot dot-green"></span>
+              <span class="card-header-title">Instant 6-Digit Realm Matcher</span>
+            </div>
+            <div class="room-matcher-box">
+              <label for="room-code-input" class="input-label">Enter 6-Digit Room or Preview Branch Code</label>
+              <div class="room-input-group">
+                <input
+                  id="room-code-input"
+                  type="text"
+                  value="TEST-4821"
+                  placeholder="e.g. TEST-4821"
+                  aria-label="Room Code"
+                />
+                <button type="button" id="btn-join-room" class="btn btn-primary">Join Realm</button>
+              </div>
+              <div id="room-join-feedback" class="room-feedback" aria-live="polite">
+                Connected to <strong>#TEST-4821</strong> — The Boiling Iron Rig (<code>patch_v14.pck</code> mounted)
+              </div>
+              <div class="active-rooms-list" id="active-rooms-list"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- EMBEDDED PLAYABLE 3D CLIENT DEMO -->
+      <section id="playable-demo" class="section demo-section">
+        <div class="container">
+          <div class="section-header">
+            <div>
+              <div class="eyebrow">EMBEDDED UNIVERSAL CLIENT BUNDLE (CARTRIDGE #1: ACTION-RPG)</div>
+              <h2>The Boiling Iron Rig — Interactive 3D Slice &amp; Live QA Probe</h2>
+            </div>
+            <div class="demo-toolbar">
+              <button type="button" id="btn-toggle-quad" class="btn btn-secondary">
+                Toggle 4-Panel Quad-Debug View
+              </button>
+              <button type="button" id="btn-hold-l1" class="btn btn-accent">
+                🎙️ Hold L1: Voice Architect Prompt
+              </button>
+            </div>
+          </div>
+
+          <div class="demo-stage-grid">
+            <div class="canvas-wrapper">
+              <canvas id="game-canvas" width="960" height="540" tabindex="0" aria-label="Playable 3D Game Slice: The Boiling Iron Rig"></canvas>
+              <div class="canvas-hud-bar">
+                <span><strong>Controls:</strong> <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Move</span>
+                <span><kbd>E</kbd> Extract Coal Ore (Metal Shield)</span>
+                <span><kbd>Space</kbd> Cast Earth Lance</span>
+                <span><kbd>Q</kbd> Toggle Quad-Debug</span>
+              </div>
+            </div>
+
+            <aside class="demo-sidebar">
+              <div class="panel-box">
+                <h3>Active Scene Contract</h3>
+                <p class="mono-path">res://scenes/zones/fire_prison_rig.tscn</p>
+                <ul class="contract-list">
+                  <li><span>Physics Engine</span> <strong>JoltPhysics3D (60Hz)</strong></li>
+                  <li><span>Draw Call Budget</span> <strong id="hud-draw-calls">112 / 180</strong></li>
+                  <li><span>Active Quest</span> <strong>q_prison_break</strong></li>
+                  <li><span>CoalVent_01 Charges</span> <strong id="hud-vent-charges">6 / 6</strong></li>
+                  <li><span>Warden Boss HP</span> <strong id="hud-warden-hp">2200 / 2200</strong></li>
+                </ul>
+              </div>
+
+              <div class="panel-box">
+                <h3>Quick In-Game Actions</h3>
+                <div class="action-buttons-stack">
+                  <button type="button" id="btn-extract-coal" class="btn btn-secondary btn-full">
+                    🛡️ Extract CoalVent_01 &amp; Form Metal Shield
+                  </button>
+                  <button type="button" id="btn-earth-lance" class="btn btn-primary btn-full">
+                    ⚡ Cast Tectonic Earth Lance (185 DMG)
+                  </button>
+                  <button type="button" id="btn-run-bot-swarm" class="btn btn-secondary btn-full">
+                    🤖 Run 10x Speed Bot Swarm Check
+                  </button>
+                </div>
+              </div>
+
+              <div class="panel-box telemetry-box">
+                <h3>Live Telemetry Feed (<code>telemetry.jsonl</code>)</h3>
+                <pre id="telemetry-log" class="telemetry-pre"></pre>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <!-- STREAMLINED CREATOR BUILD PIPELINE (4 STEPS, NO VIRTUAL TEAM EXPOSED) -->
+      <section id="creator-studio" class="section studio-section">
+        <div class="container">
+          <div class="section-header">
+            <div>
+              <div class="eyebrow">CLOUD AUTONOMOUS BUILD PIPELINE</div>
+              <h2>Prompt-to-Realm Studio — 4 Verification-Gated Steps</h2>
+              <p class="section-sub">
+                Describe a new feature, boss mechanic, or world modification. Our cloud build engine scopes,
+                generates procedural Godot 4.7 resources, runs automated 10x bot &amp; visual QA checks,
+                and deploys an isolated Preview Branch Server in seconds.
+              </p>
+            </div>
+            <div class="ledger-pill-box" id="ledger-summary">
+              <span>Plan: <strong>Creator Pro (£24/mo)</strong></span>
+              <span>Credits: <strong id="credits-remaining">132 / 150</strong></span>
+              <span>Cache Hit: <strong>87.4%</strong></span>
+            </div>
+          </div>
+
+          <div class="studio-builder-card">
+            <form id="build-prompt-form" class="prompt-form">
+              <div class="prompt-row">
+                <select id="cartridge-select" aria-label="Starter Cartridge Template">
+                  <option value="template-action-rpg">Cartridge: Action-RPG (Elemental Campaign)</option>
+                  <option value="template-tick-sandbox">Cartridge: Tick-Based Sandbox RPG (600ms)</option>
+                  <option value="template-voxel-survival">Cartridge: Voxel Survival (Transvoxel)</option>
+                  <option value="template-4x-strategy">Cartridge: 4X Turn-Based Hex Strategy</option>
+                  <option value="template-arena-fps">Cartridge: 60Hz Rollback Arena FPS</option>
+                  <option value="template-collector-tycoon">Cartridge: Collector Tycoon &amp; Spline Racer</option>
+                </select>
+                <input
+                  id="build-prompt-input"
+                  type="text"
+                  required
+                  value="Add a molten geyser hazard ring around the Warden boss arena and boost Metal Shield mitigation"
+                  placeholder="Describe what to build or modify in your 3D realm..."
+                />
+                <button type="submit" id="btn-submit-build" class="btn btn-primary">
+                  Run Build Pipeline (3 Credits)
+                </button>
+              </div>
+              <div class="preset-prompts">
+                <span>Quick ideas:</span>
+                <button type="button" class="chip-btn" data-prompt="Add a second compressed coal vent on the eastern catwalk with double ore yield">
+                  + Eastern Catwalk Coal Vent
+                </button>
+                <button type="button" class="chip-btn" data-prompt="Give the Fire Warden an overheat phase at 50% HP that spawns volcanic shockwaves">
+                  + Warden Overheat Shockwave Phase
+                </button>
+                <button type="button" class="chip-btn" data-prompt="Generate a procedural WFC iron dungeon beneath the rig deck with 3 co-op switches">
+                  + Procedural WFC Under-Deck Dungeon
+                </button>
+              </div>
+            </form>
+
+            <!-- 4-STEP STREAMLINED PROGRESS DISPLAY -->
+            <div id="build-steps-grid" class="steps-grid" aria-live="polite"></div>
+
+            <!-- BUILD VERIFICATION & PREVIEW SERVER RESULT BAR -->
+            <div id="build-result-banner" class="build-result-banner"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6 GENRE STARTER CARTRIDGES -->
+      <section id="cartridges" class="section cartridges-section">
+        <div class="container">
+          <div class="section-header">
+            <div>
+              <div class="eyebrow">OPEN-SOURCE MIT TEMPLATES + INDEXED CC0 ASSET CATALOG</div>
+              <h2>6 Pre-Wired Genre Starter Cartridges</h2>
+              <p class="section-sub">
+                Every project starts from a production-grade multiplayer architecture paired with native C++
+                GDExtensions (<code>JoltPhysics3D</code>, <code>Terrain3D</code>, <code>godot_voxel</code>,
+                <code>LimboAI</code>, <code>godot-sqlite</code>).
+              </p>
+            </div>
+          </div>
+          <div id="cartridges-grid" class="cartridges-grid"></div>
+        </div>
+      </section>
+
+      <!-- SAAS PRICING & COMMERCIAL EJECT -->
+      <section id="pricing" class="section pricing-section">
+        <div class="container">
+          <div class="section-header">
+            <div>
+              <div class="eyebrow">PLAYER REALMS ARE ALWAYS £0.00 • ZERO ROYALTIES</div>
+              <h2>Subscription Realms &amp; One-Click Commercial Eject</h2>
+            </div>
+            <button type="button" id="btn-trigger-eject" class="btn btn-accent">
+              🚀 Preview Commercial Eject (£249 / Studio Included)
+            </button>
+          </div>
+
+          <div class="pricing-grid">
+            <article class="price-card">
+              <div class="tier-tag">Players &amp; Friends</div>
+              <h3>Universal Client</h3>
+              <div class="price-val">£0 <span>forever</span></div>
+              <p>Download once on PC, Mac, Linux, Steam Deck, iOS, Android, or Console. Join any friend's 6-digit Room Code for free.</p>
+              <ul class="feature-list">
+                <li>✓ Instant 15–50 MB <code>.pck</code> streaming</li>
+                <li>✓ Strict AST &amp; C++ <code>--sandboxed-pck</code> security</li>
+                <li>✓ Cross-platform controller &amp; UI prompts</li>
+              </ul>
+            </article>
+
+            <article class="price-card">
+              <div class="tier-tag">Tier 1 • Hobbyist</div>
+              <h3>Explorer</h3>
+              <div class="price-val">£0 <span>/ month</span></div>
+              <p>Try the cloud build pipeline and test multiplayer realms with a friend.</p>
+              <ul class="feature-list">
+                <li>✓ 3 daily build prompts (Fast Flash routing)</li>
+                <li>✓ 1 Active Project &amp; 2-player peer preview</li>
+                <li>✓ Full access to all 6 MIT Starter Cartridges</li>
+              </ul>
+            </article>
+
+            <article class="price-card price-card-featured">
+              <div class="tier-tag">Tier 2 • Most Popular</div>
+              <h3>Creator Pro</h3>
+              <div class="price-val">£24 <span>/ month</span></div>
+              <p>Full autonomous cloud build pipeline, automated 10x bot &amp; visual QA, and scale-to-zero hosting.</p>
+              <ul class="feature-list">
+                <li>✓ <strong>150 Workspace Credits / mo</strong></li>
+                <li>✓ Up to 3 Hosted Realms (8 players / room)</li>
+                <li>✓ Unlimited Collaborators + 2-Way GitHub Sync</li>
+                <li>✓ In-game Hold-L1 Voice Architect Relay</li>
+              </ul>
+            </article>
+
+            <article class="price-card">
+              <div class="tier-tag">Tier 3 • Indie Teams</div>
+              <h3>Realm Studio</h3>
+              <div class="price-val">£59 <span>/ month</span></div>
+              <p>Priority GPU/Vision QA queues, preview branch servers, and full commercial source eject rights.</p>
+              <ul class="feature-list">
+                <li>✓ <strong>450 Workspace Credits / mo</strong></li>
+                <li>✓ Ephemeral Preview Branch Servers (<code>#TEST-XXXX</code>)</li>
+                <li>✓ 32-Player Guild Server + Overnight 1,000-Bot Fuzzing</li>
+                <li>✓ <strong>Included Commercial Eject Rights (£249 value)</strong></li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- NATIVE MODAL DIALOG (following modern-web-guidance light-dismiss-a-dialog) -->
+    <dialog id="info-dialog" closedby="any" aria-labelledby="dialog-title" class="site-dialog">
+      <form method="dialog" class="dialog-content">
+        <div class="dialog-header">
+          <h2 id="dialog-title">Commercial Eject &amp; Universal Launcher</h2>
+          <button type="submit" class="btn-close" aria-label="Close modal">✕</button>
+        </div>
+        <div id="dialog-body" class="dialog-body"></div>
+        <div class="dialog-footer">
+          <button type="submit" class="btn btn-primary">Done</button>
+        </div>
+      </form>
+    </dialog>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div>
+          <strong>playable.gg</strong> — Open-Core AI-Native Multi-Tenant 3D Game Studio (Godot 4.7+ / JoltPhysics3D)
+        </div>
+        <div class="footer-links">
+          <span>MIT Client &amp; Cartridges</span>
+          <span>•</span>
+          <span>Cloudflare R2 <code>.pck</code> Streaming</span>
+          <span>•</span>
+          <span>Agones Scale-to-Zero Fleet</span>
+        </div>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
