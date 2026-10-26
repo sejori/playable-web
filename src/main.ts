@@ -42,7 +42,9 @@ interface RealmRoomInfo {
   wake_latency_ms: number;
 }
 
-const API_BASE = 'http://127.0.0.1:8080';
+const API_BASE: string =
+  (import.meta as unknown as { env?: Record<string, string> }).env?.VITE_API_BASE_URL ||
+  'http://127.0.0.1:8080';
 
 const FALLBACK_CARTRIDGES: CartridgeInfo[] = [
   {
