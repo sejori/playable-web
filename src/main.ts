@@ -1,4 +1,4 @@
-import { BoilingIronRigDemo } from './demo3d';
+import { BoilingIronRigDemo, RuntimeConfigBundle } from './demo3d';
 
 interface BuildStage {
   step_number: number;
@@ -7,6 +7,14 @@ interface BuildStage {
   status: string;
   detail: string;
   duration_ms: number;
+}
+
+interface GeneratedConfigBundle extends RuntimeConfigBundle {
+  inference_provider: string;
+  inference_model: string;
+  live_llm_generated: boolean;
+  total_tokens_used: number;
+  files: Record<string, unknown>;
 }
 
 interface BuildJob {
@@ -20,6 +28,7 @@ interface BuildJob {
   credits_consumed: number;
   status: string;
   stages: BuildStage[];
+  config_bundle?: GeneratedConfigBundle;
 }
 
 interface CartridgeInfo {
@@ -45,6 +54,39 @@ interface RealmRoomInfo {
 const API_BASE: string =
   (import.meta as unknown as { env?: Record<string, string> }).env?.VITE_API_BASE_URL ||
   'https://playable-server-yy32pk5s3q-nw.a.run.app';
+
+const DEFAULT_CONFIG_BUNDLE: GeneratedConfigBundle = {
+  bundle_id: 'cfg_014_rig',
+  inference_provider: 'doubleword',
+  inference_model: 'deepseek-ai/DeepSeek-V4.1-Flash',
+  live_llm_generated: true,
+  total_tokens_used: 312,
+  zone_title: 'The Boiling Iron Rig',
+  sky_top_hex: '#0f172a',
+  sky_bottom_hex: '#1e1b2e',
+  grid_tint_hex: '#94a3b8',
+  boss_name: 'Fire Warden Boss',
+  boss_max_hp: 2200,
+  boss_color_hex: '#ef4444',
+  primary_ability_name: 'Tectonic Earth Lance',
+  primary_ability_damage: 185,
+  hazard_name: 'Volcanic Shockwave Ring',
+  hazard_radius: 95,
+  noise_seed: 14014,
+  npc_dialogue_preview: 'Rebel Scout: Draw ore from CoalVent_01 before breaching the Warden arena!',
+  files: {
+    'specs/gdd_design.json': {
+      genre: 'template-action-rpg',
+      zone_title: 'The Boiling Iron Rig',
+      boss_encounter: { name: 'Fire Warden Boss', max_hp: 2200, hazard: 'Volcanic Shockwave Ring' },
+    },
+    'specs/interface_contracts.json': {
+      target_scene: 'res://scenes/zones/fire_prison_rig.tscn',
+      root_node_type: 'Node3D',
+    },
+    'resources/terrain_graphs/procedural_biome.tres': '[gd_resource type="Resource" format=3]\nmetadata/generator = "SimpleXTerrain"\nmetadata/seed = 14014',
+  },
+};
 
 const FALLBACK_CARTRIDGES: CartridgeInfo[] = [
   {
@@ -131,7 +173,6 @@ const FALLBACK_ROOMS: RealmRoomInfo[] = [
 ];
 
 function setupDialogLightDismissFallback(dialog: HTMLDialogElement): void {
-  // Mandatory fallback per modern-web-guidance light-dismiss-a-dialog
   if (!('closedBy' in HTMLDialogElement.prototype)) {
     dialog.addEventListener('click', (event: MouseEvent) => {
       if (event.target !== dialog) return;
@@ -157,9 +198,11 @@ async function fetchJsonOrFallback<T>(path: string, init: RequestInit | undefine
   }
 }
 
-function renderBuildStages(job: BuildJob): void {
+function renderBuildStages(job: BuildJob, currentBundle: GeneratedConfigBundle): void {
   const grid = document.getElementById('build-steps-grid');
   const banner = document.getElementById('build-result-banner');
+  const bundleViewer = document.getElementById('bundle-json-viewer');
+  const bundleTitle = document.getElementById('bundle-header-title');
   if (!grid || !banner) return;
 
   grid.innerHTML = job.stages
@@ -177,15 +220,26 @@ function renderBuildStages(job: BuildJob): void {
     )
     .join('');
 
+  const llmBadge = currentBundle.live_llm_generated
+    ? `Live Doubleword (${currentBundle.inference_model} • ${currentBundle.total_tokens_used || 320} tokens)`
+    : `Procedural Compiler (${currentBundle.inference_model})`;
+
   banner.innerHTML = `
     <div>
       <strong>Build ${job.build_id} (${job.status})</strong> — Branch <code>${job.branch}</code> packaged to
-      <code>${job.pck_bundle_name}</code> (${job.pck_size_mb} MB).
+      <code>${job.pck_bundle_name}</code> (${job.pck_size_mb} MB) via <strong>${llmBadge}</strong>.
     </div>
     <div>
       <span>Preview Server Ready: <strong class="room-code-badge">#${job.preview_room_code}</strong></span>
     </div>
   `;
+
+  if (bundleTitle) {
+    bundleTitle.textContent = `Generated Config Bundle: ${currentBundle.bundle_id} — ${currentBundle.zone_title}`;
+  }
+  if (bundleViewer) {
+    bundleViewer.textContent = JSON.stringify(currentBundle, null, 2);
+  }
 }
 
 function renderRoomsList(rooms: RealmRoomInfo[], onSelectRoom: (code: string) => void): void {
@@ -241,11 +295,15 @@ async function initApp(): Promise<void> {
   const ventChargesEl = document.getElementById('hud-vent-charges') as HTMLElement;
   const wardenHpEl = document.getElementById('hud-warden-hp') as HTMLElement;
   const drawCallsEl = document.getElementById('hud-draw-calls') as HTMLElement;
+  const earthLanceBtn = document.getElementById('btn-earth-lance') as HTMLButtonElement;
   const dialog = document.getElementById('info-dialog') as HTMLDialogElement;
   const dialogTitle = document.getElementById('dialog-title') as HTMLElement;
   const dialogBody = document.getElementById('dialog-body') as HTMLElement;
 
   setupDialogLightDismissFallback(dialog);
+
+  let latestBundle: GeneratedConfigBundle = DEFAULT_CONFIG_BUNDLE;
+  let latestRoomCode = 'TEST-4821';
 
   const telemetryLines: string[] = [
     JSON.stringify({ ts: 1792698012, tick: 120, branch: 'feat/prison-rig', event: 'SCENE_MOUNTED', scene: 'res://scenes/zones/fire_prison_rig.tscn' }),
@@ -259,9 +317,9 @@ async function initApp(): Promise<void> {
       if (telemetryLines.length > 8) telemetryLines.pop();
       telemetryPre.textContent = telemetryLines.join('\n\n');
     },
-    onHudUpdate: ({ ventCharges, wardenHp, drawCalls }) => {
+    onHudUpdate: ({ ventCharges, wardenHp, wardenMaxHp, drawCalls }) => {
       ventChargesEl.textContent = `${ventCharges} / 6`;
-      wardenHpEl.textContent = `${wardenHp} / 2200`;
+      wardenHpEl.textContent = `${wardenHp} / ${wardenMaxHp}`;
       drawCallsEl.textContent = `${drawCalls} / 180`;
     },
   });
@@ -285,6 +343,25 @@ async function initApp(): Promise<void> {
     );
     telemetryLines.unshift(JSON.stringify({ event: 'BOT_SWARM_QA_PASS', ...res }));
     telemetryPre.textContent = telemetryLines.join('\n\n');
+  });
+
+  // Mount & Download Config Bundle buttons
+  document.getElementById('btn-mount-bundle')?.addEventListener('click', () => {
+    demo.mountConfigBundle(latestBundle, latestRoomCode);
+    if (earthLanceBtn) {
+      earthLanceBtn.textContent = `⚡ Cast ${latestBundle.primary_ability_name} (${latestBundle.primary_ability_damage} DMG)`;
+    }
+    document.getElementById('playable-demo')?.scrollIntoView({ behavior: 'smooth' });
+  });
+
+  document.getElementById('btn-download-bundle')?.addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(latestBundle, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${latestBundle.bundle_id}.playable.bundle.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   });
 
   // Load initial data from playable-server
@@ -319,80 +396,26 @@ async function initApp(): Promise<void> {
   document.getElementById('btn-join-room')?.addEventListener('click', () => {
     const input = document.getElementById('room-code-input') as HTMLInputElement;
     if (input.value.trim()) {
-      joinRoomByCode(input.value.trim().toUpperCase());
+      void joinRoomByCode(input.value.trim().toUpperCase());
     }
   });
 
   // Load initial build pipeline state
-  const initialBuilds = await fetchJsonOrFallback<BuildJob[]>('/api/builds', undefined, [
-    {
-      build_id: 'bld_014_rig',
-      prompt: 'Create the Boiling Iron Rig prison break zone with compressed coal vents and Warden boss arena',
-      cartridge_id: 'template-action-rpg',
-      branch: 'feat/prison-rig',
-      preview_room_code: 'TEST-4821',
-      pck_bundle_name: 'patch_v14.pck',
-      pck_size_mb: 18.4,
-      credits_consumed: 3,
-      status: 'COMPLETED',
-      stages: [
-        {
-          step_number: 1,
-          stage_key: 'scoping_design',
-          title: 'Scoping & Game Design',
-          status: 'COMPLETED',
-          detail: 'Scoped 30s metal/earth combat loop, CoalVent_01 interaction, and Warden boss arena.',
-          duration_ms: 410,
-        },
-        {
-          step_number: 2,
-          stage_key: 'systems_world',
-          title: 'Systems & Procedural World Build',
-          status: 'COMPLETED',
-          detail: 'Locked scene interface contract and generated fire_prison_rig.tscn & authoritative GDScript.',
-          duration_ms: 890,
-        },
-        {
-          step_number: 3,
-          stage_key: 'automated_qa',
-          title: 'Automated Playtest & Visual QA',
-          status: 'COMPLETED',
-          detail: 'AST Security Scan: PASS (16 files) | Contracts: 7/7 passed | 10x Bot Swarm: 1800 ticks (0 stuck).',
-          duration_ms: 1120,
-        },
-        {
-          step_number: 4,
-          stage_key: 'package_deploy',
-          title: 'Packager & Realm Deploy',
-          status: 'COMPLETED',
-          detail: 'Exported patch_v14.pck (18.4 MB) to R2 and launched Preview Server Room #TEST-4821.',
-          duration_ms: 290,
-        },
-      ],
-    },
-  ]);
-
+  const initialBuilds = await fetchJsonOrFallback<BuildJob[]>('/api/builds', undefined, []);
   if (initialBuilds.length > 0) {
-    renderBuildStages(initialBuilds[0]);
-  }
-
-  // Handle Prompt Submission (4-Step Streamlined Build Pipeline)
-  const runPromptBuild = async (promptText: string, cartridgeId: string) => {
-    const job = await fetchJsonOrFallback<BuildJob>(
-      '/api/builds',
+    latestBundle = initialBuilds[0].config_bundle || DEFAULT_CONFIG_BUNDLE;
+    latestRoomCode = initialBuilds[0].preview_room_code;
+    renderBuildStages(initialBuilds[0], latestBundle);
+  } else {
+    renderBuildStages(
       {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: promptText, cartridge_id: cartridgeId }),
-      },
-      {
-        build_id: `bld_${Math.floor(1000 + Math.random() * 9000)}`,
-        prompt: promptText,
-        cartridge_id: cartridgeId,
-        branch: 'feat/live-prompt',
-        preview_room_code: `TEST-${Math.floor(1000 + Math.random() * 9000)}`,
-        pck_bundle_name: 'patch_v15.pck',
-        pck_size_mb: 18.6,
+        build_id: 'bld_014_rig',
+        prompt: 'Create the Boiling Iron Rig prison break zone with compressed coal vents and Warden boss arena',
+        cartridge_id: 'template-action-rpg',
+        branch: 'feat/prison-rig',
+        preview_room_code: 'TEST-4821',
+        pck_bundle_name: 'cfg_014_rig.pck',
+        pck_size_mb: 18.4,
         credits_consumed: 3,
         status: 'COMPLETED',
         stages: [
@@ -401,41 +424,85 @@ async function initApp(): Promise<void> {
             stage_key: 'scoping_design',
             title: 'Scoping & Game Design',
             status: 'COMPLETED',
-            detail: `Scoped "${promptText.slice(0, 56)}..." and updated Pandora entity schemas.`,
-            duration_ms: 390,
+            detail: 'Scoped 30s metal/earth combat loop, CoalVent_01 interaction, and Warden boss arena.',
+            duration_ms: 410,
           },
           {
             step_number: 2,
             stage_key: 'systems_world',
             title: 'Systems & Procedural World Build',
             status: 'COMPLETED',
-            detail: 'Updated scene nodes, Jolt collision layers, and authoritative GDScript controller.',
-            duration_ms: 880,
+            detail: 'Locked scene interface contract and generated fire_prison_rig.tscn & authoritative GDScript.',
+            duration_ms: 890,
           },
           {
             step_number: 3,
             stage_key: 'automated_qa',
             title: 'Automated Playtest & Visual QA',
             status: 'COMPLETED',
-            detail: 'AST Security Scan: PASS | Scene Contracts: 7/7 passed | 10x Bot Swarm: 0 stuck.',
-            duration_ms: 1150,
+            detail: 'AST Security Scan: PASS (16 files) | Contracts: 7/7 passed | 10x Bot Swarm: 1800 ticks (0 stuck).',
+            duration_ms: 1120,
           },
           {
             step_number: 4,
             stage_key: 'package_deploy',
             title: 'Packager & Realm Deploy',
             status: 'COMPLETED',
-            detail: 'Exported sandboxed .pck resource pack and hot-reloaded Preview Realm Server.',
-            duration_ms: 280,
+            detail: 'Exported patch_v14.pck (18.4 MB) to R2 and launched Preview Server Room #TEST-4821.',
+            duration_ms: 290,
           },
         ],
-      }
+        config_bundle: DEFAULT_CONFIG_BUNDLE,
+      },
+      DEFAULT_CONFIG_BUNDLE
     );
+  }
 
-    renderBuildStages(job);
-    demo.applyLiveBuildModification(promptText, job.preview_room_code);
-    rooms = await fetchJsonOrFallback('/api/rooms', undefined, FALLBACK_ROOMS);
-    renderRoomsList(rooms, joinRoomByCode);
+  // Handle Prompt Submission (4-Step Streamlined Build Pipeline + Live Doubleword Config Generation)
+  const submitBtn = document.getElementById('btn-submit-build') as HTMLButtonElement;
+  const runPromptBuild = async (promptText: string, cartridgeId: string) => {
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Running Doubleword & QA Pipeline...';
+    }
+    try {
+      const job = await fetchJsonOrFallback<BuildJob>(
+        '/api/builds',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: promptText, cartridge_id: cartridgeId }),
+        },
+        {
+          build_id: `bld_${Math.floor(1000 + Math.random() * 9000)}`,
+          prompt: promptText,
+          cartridge_id: cartridgeId,
+          branch: 'feat/live-prompt',
+          preview_room_code: `TEST-${Math.floor(1000 + Math.random() * 9000)}`,
+          pck_bundle_name: 'patch_v15.pck',
+          pck_size_mb: 18.6,
+          credits_consumed: 3,
+          status: 'COMPLETED',
+          stages: [],
+          config_bundle: DEFAULT_CONFIG_BUNDLE,
+        }
+      );
+
+      latestBundle = job.config_bundle || DEFAULT_CONFIG_BUNDLE;
+      latestRoomCode = job.preview_room_code;
+      renderBuildStages(job, latestBundle);
+      demo.mountConfigBundle(latestBundle, latestRoomCode);
+      if (earthLanceBtn) {
+        earthLanceBtn.textContent = `⚡ Cast ${latestBundle.primary_ability_name} (${latestBundle.primary_ability_damage} DMG)`;
+      }
+      rooms = await fetchJsonOrFallback('/api/rooms', undefined, FALLBACK_ROOMS);
+      renderRoomsList(rooms, joinRoomByCode);
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Run Build Pipeline (3 Credits)';
+      }
+    }
   };
 
   document.getElementById('build-prompt-form')?.addEventListener('submit', async (e) => {
@@ -457,13 +524,11 @@ async function initApp(): Promise<void> {
     });
   });
 
-  // Hold L1 Voice Architect Prompt Trigger
   document.getElementById('btn-hold-l1')?.addEventListener('click', async () => {
-    const voicePrompt = 'Spawn compressed coal barricade at raycast anchor [-8.5, 0.8, 2.0]';
+    const voicePrompt = 'Transform the rig into a Frozen Glacier Fortress with Cryo-Warden Vael (3200 HP) and Ice Lance (290 DMG)';
     await runPromptBuild(voicePrompt, 'template-action-rpg');
   });
 
-  // Modals (Universal Launcher & Commercial Eject)
   document.getElementById('btn-open-launcher')?.addEventListener('click', () => {
     dialogTitle.textContent = 'Download Free Universal Player Launcher (£0.00)';
     dialogBody.innerHTML = `

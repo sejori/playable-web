@@ -3,13 +3,31 @@
  * Supports:
  * - Real-time WASD movement of PlayerCharacter (Layer 2)
  * - CoalVent_01 (Layer 4, group="metal_source") interaction & Metal Shield activation
- * - Earth Lance projectile casting (Layer 5) against Fire Warden Boss (Layer 3)
+ * - Earth Lance projectile casting (Layer 5) against Boss (Layer 3)
+ * - Dynamic hot-reloading of LLM-generated procedural Config Bundles (sky, grid, boss, abilities, hazards)
  * - 4-Panel Quad-Debug Vision Mode ([Player 3rd-Person], [Ortho Navmesh], [Jolt Collision Wireframe], [UI Bounds])
  */
 
+export interface RuntimeConfigBundle {
+  bundle_id: string;
+  zone_title: string;
+  sky_top_hex: string;
+  sky_bottom_hex: string;
+  grid_tint_hex: string;
+  boss_name: string;
+  boss_max_hp: number;
+  boss_color_hex: string;
+  primary_ability_name: string;
+  primary_ability_damage: number;
+  hazard_name: string;
+  hazard_radius: number;
+  noise_seed: number;
+  npc_dialogue_preview: string;
+}
+
 export interface DemoCallbacks {
   onTelemetryEvent: (event: Record<string, unknown>) => void;
-  onHudUpdate: (state: { ventCharges: number; wardenHp: number; drawCalls: number }) => void;
+  onHudUpdate: (state: { ventCharges: number; wardenHp: number; wardenMaxHp: number; drawCalls: number }) => void;
 }
 
 interface Projectile {
@@ -27,6 +45,23 @@ export class BoilingIronRigDemo {
   public quadDebugMode = false;
   public activeRoomCode = 'TEST-4821';
   public customFeatureBanner = '';
+
+  public activeBundle: RuntimeConfigBundle = {
+    bundle_id: 'cfg_default_014',
+    zone_title: 'The Boiling Iron Rig',
+    sky_top_hex: '#0f172a',
+    sky_bottom_hex: '#1e1b2e',
+    grid_tint_hex: '#94a3b8',
+    boss_name: 'Fire Warden Boss',
+    boss_max_hp: 2200,
+    boss_color_hex: '#ef4444',
+    primary_ability_name: 'Tectonic Earth Lance',
+    primary_ability_damage: 185,
+    hazard_name: 'Volcanic Arena Ring',
+    hazard_radius: 95,
+    noise_seed: 14014,
+    npc_dialogue_preview: 'Rebel Scout: Extract ore from CoalVent_01 before engaging the Warden!',
+  };
 
   private keys: Record<string, boolean> = {};
   private player = { x: 0, z: 16, hp: 500, chi: 100, shieldActive: false, shieldTimer: 0 };
@@ -88,6 +123,7 @@ export class BoilingIronRigDemo {
     this.callbacks.onHudUpdate({
       ventCharges: this.coalVent.charges,
       wardenHp: this.warden.hp,
+      wardenMaxHp: this.warden.maxHp,
       drawCalls: 118,
     });
     this.callbacks.onTelemetryEvent({
@@ -113,15 +149,28 @@ export class BoilingIronRigDemo {
     });
   }
 
-  public applyLiveBuildModification(featureLabel: string, roomCode: string): void {
-    this.customFeatureBanner = featureLabel;
+  public mountConfigBundle(bundle: RuntimeConfigBundle, roomCode: string): void {
+    this.activeBundle = bundle;
     this.activeRoomCode = roomCode;
+    this.customFeatureBanner = `${bundle.zone_title} • ${bundle.hazard_name} (Seed ${bundle.noise_seed})`;
     this.coalVent.charges = 6;
-    this.warden.hp = this.warden.maxHp;
+    this.warden.maxHp = bundle.boss_max_hp;
+    this.warden.hp = bundle.boss_max_hp;
     this.callbacks.onHudUpdate({
       ventCharges: this.coalVent.charges,
       wardenHp: this.warden.hp,
+      wardenMaxHp: this.warden.maxHp,
       drawCalls: 124,
+    });
+    this.callbacks.onTelemetryEvent({
+      ts: Math.floor(Date.now() / 1000),
+      tick: this.tick,
+      event: 'BUNDLE_HOT_RELOADED',
+      bundle_id: bundle.bundle_id,
+      zone_title: bundle.zone_title,
+      boss_name: bundle.boss_name,
+      boss_max_hp: bundle.boss_max_hp,
+      ability_damage: bundle.primary_ability_damage,
     });
   }
 
@@ -143,7 +192,7 @@ export class BoilingIronRigDemo {
       }
     }
 
-    // Update Earth Lance projectiles
+    const dmg = this.activeBundle.primary_ability_damage || 185;
     for (let i = this.projectiles.length - 1; i >= 0; i--) {
       const p = this.projectiles[i];
       p.x += p.vx;
@@ -151,10 +200,11 @@ export class BoilingIronRigDemo {
       const dist = Math.hypot(p.x - this.warden.x, p.z - this.warden.z);
       if (dist < 2.6) {
         this.projectiles.splice(i, 1);
-        this.warden.hp = Math.max(0, this.warden.hp - 185);
+        this.warden.hp = Math.max(0, this.warden.hp - dmg);
         this.callbacks.onHudUpdate({
           ventCharges: this.coalVent.charges,
           wardenHp: this.warden.hp,
+          wardenMaxHp: this.warden.maxHp,
           drawCalls: 116,
         });
         this.callbacks.onTelemetryEvent({
@@ -162,8 +212,8 @@ export class BoilingIronRigDemo {
           tick: this.tick,
           branch: 'feat/prison-rig',
           event: 'COMBAT_HIT',
-          ability: 'earth_lance',
-          damage: 185,
+          ability: this.activeBundle.primary_ability_name,
+          damage: dmg,
           warden_hp_remaining: this.warden.hp,
         });
         if (this.warden.hp === 0) {
@@ -187,7 +237,7 @@ export class BoilingIronRigDemo {
     this.ctx.clearRect(0, 0, w, h);
 
     if (!this.quadDebugMode) {
-      this.renderPerspectivePanel(0, 0, w, h, 'LIVE CLIENT VIEW — PhantomCamera3D (60 FPS)');
+      this.renderPerspectivePanel(0, 0, w, h, `LIVE CLIENT VIEW — ${this.activeBundle.zone_title}`);
     } else {
       const hw = w / 2;
       const hh = h / 2;
@@ -214,10 +264,9 @@ export class BoilingIronRigDemo {
     ctx.rect(x, y, w, h);
     ctx.clip();
 
-    // Volcanic sky & ocean horizon gradient
     const skyGrad = ctx.createLinearGradient(x, y, x, y + h);
-    skyGrad.addColorStop(0, '#0f172a');
-    skyGrad.addColorStop(0.45, '#1e1b2e');
+    skyGrad.addColorStop(0, this.activeBundle.sky_top_hex || '#0f172a');
+    skyGrad.addColorStop(0.55, this.activeBundle.sky_bottom_hex || '#1e1b2e');
     skyGrad.addColorStop(1, '#111827');
     ctx.fillStyle = skyGrad;
     ctx.fillRect(x, y, w, h);
@@ -226,8 +275,8 @@ export class BoilingIronRigDemo {
     const cy = y + h * 0.58;
     const scale = w / 960;
 
-    // Perspective grid representing the Iron Rig platform
-    ctx.strokeStyle = 'rgba(148, 163, 184, 0.16)';
+    ctx.strokeStyle = this.activeBundle.grid_tint_hex || 'rgba(148, 163, 184, 0.22)';
+    ctx.globalAlpha = 0.25;
     ctx.lineWidth = 1;
     for (let gx = -20; gx <= 20; gx += 4) {
       const p1 = this.projectIso(gx, -36, cx, cy, scale);
@@ -245,16 +294,18 @@ export class BoilingIronRigDemo {
       ctx.lineTo(p2.px, p2.py);
       ctx.stroke();
     }
+    ctx.globalAlpha = 1.0;
 
-    // Boss Arena Ring (BossArena/ArenaTrigger)
+    // Boss Arena Hazard Ring
     const arenaPos = this.projectIso(0, -22, cx, cy, scale);
-    ctx.strokeStyle = 'rgba(249, 115, 22, 0.55)';
+    const hazRad = Math.max(45, Math.min(145, this.activeBundle.hazard_radius || 95));
+    ctx.strokeStyle = this.activeBundle.boss_color_hex || '#f97316';
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.ellipse(arenaPos.px, arenaPos.py, 95 * scale, 42 * scale, 0, 0, Math.PI * 2);
+    ctx.ellipse(arenaPos.px, arenaPos.py, hazRad * scale, (hazRad * 0.44) * scale, 0, 0, Math.PI * 2);
     ctx.stroke();
 
-    // CoalVent_01 (Interactables/CoalVent_01 - Layer 4)
+    // CoalVent_01
     const ventPos = this.projectIso(this.coalVent.x, this.coalVent.z, cx, cy, scale);
     ctx.fillStyle = '#38bdf8';
     ctx.fillRect(ventPos.px - 14 * scale, ventPos.py - 18 * scale, 28 * scale, 24 * scale);
@@ -262,16 +313,20 @@ export class BoilingIronRigDemo {
     ctx.font = `${Math.max(10, Math.round(11 * scale))}px monospace`;
     ctx.fillText(`CoalVent_01 (${this.coalVent.charges})`, ventPos.px - 42 * scale, ventPos.py - 24 * scale);
 
-    // Fire Warden Boss
+    // Boss Entity
     const pulse = Math.sin(this.tick * 0.06) * 4 * scale;
-    ctx.fillStyle = '#ef4444';
+    ctx.fillStyle = this.activeBundle.boss_color_hex || '#ef4444';
     ctx.beginPath();
     ctx.arc(arenaPos.px, arenaPos.py - 14 * scale, 20 * scale + pulse, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = '#fca5a5';
-    ctx.fillText(`Warden Boss [${this.warden.hp} HP]`, arenaPos.px - 58 * scale, arenaPos.py - 42 * scale);
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillText(
+      `${this.activeBundle.boss_name} [${this.warden.hp}/${this.warden.maxHp} HP]`,
+      arenaPos.px - 75 * scale,
+      arenaPos.py - 42 * scale
+    );
 
-    // Projectiles (Earth Lance)
+    // Projectiles
     ctx.fillStyle = '#f59e0b';
     for (const p of this.projectiles) {
       const pp = this.projectIso(p.x, p.z, cx, cy, scale);
@@ -280,7 +335,7 @@ export class BoilingIronRigDemo {
       ctx.fill();
     }
 
-    // Player Character (Layer 2 + IKModifier3D)
+    // Player Character
     const playerPos = this.projectIso(this.player.x, this.player.z, cx, cy, scale);
     if (this.player.shieldActive) {
       ctx.strokeStyle = '#38bdf8';
@@ -297,19 +352,21 @@ export class BoilingIronRigDemo {
     ctx.fillText('Player (IKModifier3D)', playerPos.px - 52 * scale, playerPos.py + 18 * scale);
 
     // Top Panel Overlay Banner
-    ctx.fillStyle = 'rgba(9, 13, 22, 0.78)';
-    ctx.fillRect(x + 10, y + 10, Math.min(w - 20, 440), 28);
+    ctx.fillStyle = 'rgba(9, 13, 22, 0.82)';
+    ctx.fillRect(x + 10, y + 10, Math.min(w - 20, 520), 28);
     ctx.fillStyle = '#38bdf8';
     ctx.font = 'bold 12px monospace';
     ctx.fillText(`${label} • Room #${this.activeRoomCode}`, x + 18, y + 28);
 
-    if (this.customFeatureBanner) {
-      ctx.fillStyle = 'rgba(16, 185, 129, 0.2)';
-      ctx.fillRect(x + 10, y + h - 36, Math.min(w - 20, 520), 26);
-      ctx.fillStyle = '#a7f3d0';
-      ctx.font = '11px monospace';
-      ctx.fillText(`Live Patch Active: ${this.customFeatureBanner}`, x + 18, y + h - 19);
-    }
+    // NPC Dialogue / Patch Banner
+    ctx.fillStyle = 'rgba(16, 185, 129, 0.22)';
+    ctx.fillRect(x + 10, y + h - 38, Math.min(w - 20, 680), 28);
+    ctx.fillStyle = '#a7f3d0';
+    ctx.font = '11px monospace';
+    const bottomText = this.customFeatureBanner
+      ? `Mounted Bundle [${this.activeBundle.bundle_id}]: ${this.customFeatureBanner}`
+      : this.activeBundle.npc_dialogue_preview;
+    ctx.fillText(bottomText.slice(0, 92), x + 18, y + h - 20);
 
     ctx.restore();
   }
@@ -320,18 +377,15 @@ export class BoilingIronRigDemo {
     ctx.fillStyle = '#071318';
     ctx.fillRect(x, y, w, h);
 
-    // Baked NavigationRegion3D polygon
     ctx.fillStyle = 'rgba(56, 189, 248, 0.22)';
     ctx.strokeStyle = '#38bdf8';
     ctx.lineWidth = 1.5;
     ctx.fillRect(x + w * 0.18, y + h * 0.14, w * 0.64, h * 0.74);
     ctx.strokeRect(x + w * 0.18, y + h * 0.14, w * 0.64, h * 0.74);
 
-    // Map entities in Ortho coordinates
     const mapX = (wx: number) => x + w * 0.5 + (wx / 24) * (w * 0.3);
     const mapZ = (wz: number) => y + h * 0.52 + (wz / 38) * (h * 0.35);
 
-    // Bot pathing line
     ctx.strokeStyle = '#10b981';
     ctx.setLineDash([4, 4]);
     ctx.beginPath();
@@ -343,7 +397,7 @@ export class BoilingIronRigDemo {
 
     ctx.fillStyle = '#10b981';
     ctx.fillRect(mapX(this.player.x) - 5, mapZ(this.player.z) - 5, 10, 10);
-    ctx.fillStyle = '#ef4444';
+    ctx.fillStyle = this.activeBundle.boss_color_hex || '#ef4444';
     ctx.fillRect(mapX(this.warden.x) - 6, mapZ(this.warden.z) - 6, 12, 12);
 
     ctx.fillStyle = '#38bdf8';
@@ -362,7 +416,6 @@ export class BoilingIronRigDemo {
     const cy = y + h * 0.6;
     const scale = w / 960;
 
-    // Wireframe boxes for Jolt Collision Layers 1, 2, 3, 4
     ctx.strokeStyle = '#a855f7';
     ctx.strokeRect(cx - 140 * scale, cy - 80 * scale, 280 * scale, 140 * scale);
 
@@ -395,7 +448,7 @@ export class BoilingIronRigDemo {
     ctx.font = 'bold 11px monospace';
     ctx.fillText(label, x + 12, y + 22);
     ctx.font = '11px monospace';
-    ctx.fillText('Draw Calls: 112 / 180 (PASS)', x + 26, y + 60);
+    ctx.fillText(`Bundle: ${this.activeBundle.bundle_id}`, x + 26, y + 60);
     ctx.fillText('Active Jolt Bodies: 28 / 64 (PASS)', x + 26, y + 112);
     ctx.fillText('NAV_STUCK Events: 0 (PASS)', x + 26, y + 132);
     ctx.fillText('AST Sandbox Scan: PASS', x + 26, y + 152);

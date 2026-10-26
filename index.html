@@ -219,6 +219,24 @@
 
             <!-- BUILD VERIFICATION & PREVIEW SERVER RESULT BAR -->
             <div id="build-result-banner" class="build-result-banner"></div>
+
+            <!-- GENERATED CONFIG BUNDLE INSPECTOR -->
+            <div class="panel-box" style="margin-top: 1.15rem;">
+              <div class="section-header" style="margin-bottom: 0.65rem;">
+                <div>
+                  <h3 id="bundle-header-title">Generated Procedural Config Bundle (.json / .tres / .dialogue)</h3>
+                </div>
+                <div class="demo-toolbar">
+                  <button type="button" id="btn-mount-bundle" class="btn btn-primary">
+                    ▶ Mount Bundle in Live 3D Client
+                  </button>
+                  <button type="button" id="btn-download-bundle" class="btn btn-secondary">
+                    ⬇ Download Config Bundle (.json)
+                  </button>
+                </div>
+              </div>
+              <pre id="bundle-json-viewer" class="telemetry-pre" style="max-height: 240px;"></pre>
+            </div>
           </div>
         </div>
       </section>
