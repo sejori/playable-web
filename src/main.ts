@@ -1,4 +1,19 @@
-import { BoilingIronRigDemo, RuntimeConfigBundle } from './demo3d';
+export interface RuntimeConfigBundle {
+  bundle_id: string;
+  zone_title: string;
+  sky_top_hex: string;
+  sky_bottom_hex: string;
+  grid_tint_hex: string;
+  boss_name: string;
+  boss_max_hp: number;
+  boss_color_hex: string;
+  primary_ability_name: string;
+  primary_ability_damage: number;
+  hazard_name: string;
+  hazard_radius: number;
+  noise_seed: number;
+  npc_dialogue_preview: string;
+}
 
 interface BuildStage {
   step_number: number;
@@ -53,9 +68,14 @@ interface RealmRoomInfo {
   wake_latency_ms: number;
 }
 
+type ShowcaseChapter = 'arena' | 'quad-qa' | 'shield' | 'boss';
+
+const ENV_VARS = (import.meta as unknown as { env?: Record<string, string> }).env || {};
+
 const API_BASE: string =
-  (import.meta as unknown as { env?: Record<string, string> }).env?.VITE_API_BASE_URL ||
-  'https://playable-server-yy32pk5s3q-nw.a.run.app';
+  ENV_VARS.VITE_API_BASE_URL || 'https://playable-server-yy32pk5s3q-nw.a.run.app';
+
+const SHOWCASE_VIDEO_CDN_URL: string = ENV_VARS.VITE_SHOWCASE_VIDEO_URL || '';
 
 const DEFAULT_CONFIG_BUNDLE: GeneratedConfigBundle = {
   bundle_id: 'cfg_014_rig',
@@ -86,7 +106,8 @@ const DEFAULT_CONFIG_BUNDLE: GeneratedConfigBundle = {
       target_scene: 'res://scenes/zones/fire_prison_rig.tscn',
       root_node_type: 'Node3D',
     },
-    'resources/terrain_graphs/procedural_biome.tres': '[gd_resource type="Resource" format=3]\nmetadata/generator = "SimpleXTerrain"\nmetadata/seed = 14014',
+    'resources/terrain_graphs/procedural_biome.tres':
+      '[gd_resource type="Resource" format=3]\nmetadata/generator = "SimpleXTerrain"\nmetadata/seed = 14014',
   },
 };
 
@@ -174,6 +195,14 @@ const FALLBACK_ROOMS: RealmRoomInfo[] = [
   },
 ];
 
+function escapeSvgText(input: string): string {
+  return input
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 function setupDialogLightDismissFallback(dialog: HTMLDialogElement): void {
   if (!('closedBy' in HTMLDialogElement.prototype)) {
     dialog.addEventListener('click', (event: MouseEvent) => {
@@ -228,6 +257,273 @@ async function fetchJsonOrFallback<T>(path: string, init: RequestInit | undefine
   }
 }
 
+function buildShowcaseSvgMarkup(
+  chapter: ShowcaseChapter,
+  bundle: GeneratedConfigBundle,
+  roomCode: string
+): string {
+  const zoneTitle = escapeSvgText(bundle.zone_title);
+  const bossName = escapeSvgText(bundle.boss_name);
+  const abilityName = escapeSvgText(bundle.primary_ability_name);
+  const hazardName = escapeSvgText(bundle.hazard_name);
+  const dialogue = escapeSvgText(bundle.npc_dialogue_preview);
+  const room = escapeSvgText(roomCode);
+  const bundleId = escapeSvgText(bundle.bundle_id);
+
+  if (chapter === 'quad-qa') {
+    return `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">
+        <rect width="960" height="540" fill="#070a12" />
+        <line x1="480" y1="0" x2="480" y2="540" stroke="#38bdf8" stroke-width="2" />
+        <line x1="0" y1="270" x2="960" y2="270" stroke="#38bdf8" stroke-width="2" />
+
+        <!-- Q1 -->
+        <g transform="translate(0, 0)">
+          <rect x="8" y="8" width="464" height="254" rx="6" fill="${bundle.sky_top_hex}" stroke="#1e293b" />
+          <text x="22" y="30" fill="#38bdf8" font-family="monospace" font-size="12" font-weight="bold">
+            [Q1] 3RD-PERSON VULKAN CAPTURE (${zoneTitle})
+          </text>
+          <polygon points="75,215 405,215 440,250 40,250" fill="#161f33" stroke="${bundle.grid_tint_hex}" />
+          <circle cx="170" cy="185" r="15" fill="#38bdf8">
+            <animate attributeName="cx" values="160;195;160" dur="3.2s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="320" cy="165" r="24" fill="${bundle.boss_color_hex}" />
+          <line x1="190" y1="180" x2="295" y2="167" stroke="#f97316" stroke-width="3" stroke-dasharray="6 4">
+            <animate attributeName="stroke-dashoffset" values="20;0" dur="0.8s" repeatCount="indefinite" />
+          </line>
+          <text x="22" y="244" fill="#94a3b8" font-family="monospace" font-size="11">
+            Boss: ${bossName} (${bundle.boss_max_hp} HP) • Ability: ${abilityName}
+          </text>
+        </g>
+
+        <!-- Q2 -->
+        <g transform="translate(480, 0)">
+          <rect x="8" y="8" width="464" height="254" rx="6" fill="#0b1320" stroke="#1e293b" />
+          <text x="22" y="30" fill="#10b981" font-family="monospace" font-size="12" font-weight="bold">
+            [Q2] NAVIGATION_SERVER_3D ORTHO NAVMESH (10x BOT SWARM)
+          </text>
+          <polygon points="85,60 395,60 425,215 55,215" fill="#064e3b" fill-opacity="0.32" stroke="#10b981" stroke-width="1.5" />
+          <polyline points="115,185 195,135 275,155 350,108" fill="none" stroke="#34d399" stroke-width="2.5" stroke-dasharray="5 5" />
+          <circle cx="115" cy="185" r="7" fill="#10b981">
+            <animate attributeName="cx" values="115;195;275;350;115" dur="4s" repeatCount="indefinite" />
+            <animate attributeName="cy" values="185;135;155;108;185" dur="4s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="350" cy="108" r="9" fill="#f59e0b" />
+          <text x="22" y="244" fill="#a7f3d0" font-family="monospace" font-size="11">
+            1,800 Ticks @ 10x Speed • Nav Stuck: 0 • Seed: ${bundle.noise_seed}
+          </text>
+        </g>
+
+        <!-- Q3 -->
+        <g transform="translate(0, 270)">
+          <rect x="8" y="8" width="464" height="254" rx="6" fill="#0b111e" stroke="#1e293b" />
+          <text x="22" y="30" fill="#f97316" font-family="monospace" font-size="12" font-weight="bold">
+            [Q3] JOLT_PHYSICS_3D COLLISION WIREFRAME (60HZ NATIVE)
+          </text>
+          <ellipse cx="165" cy="148" rx="44" ry="44" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4 4" />
+          <rect x="150" y="123" width="30" height="50" fill="none" stroke="#22d3ee" stroke-width="2" />
+          <circle cx="315" cy="145" r="${Math.min(72, Math.max(40, Math.round(bundle.hazard_radius * 0.55)))}" fill="none" stroke="#f97316" stroke-width="1.5" stroke-dasharray="8 4">
+            <animate attributeName="r" values="48;62;48" dur="2.5s" repeatCount="indefinite" />
+          </circle>
+          <rect x="290" y="110" width="50" height="70" fill="none" stroke="${bundle.boss_color_hex}" stroke-width="2" />
+          <text x="22" y="244" fill="#fdba74" font-family="monospace" font-size="11">
+            Hazard: ${hazardName} (r=${bundle.hazard_radius}) • Jolt Broadphase: PASS
+          </text>
+        </g>
+
+        <!-- Q4 -->
+        <g transform="translate(480, 270)">
+          <rect x="8" y="8" width="464" height="254" rx="6" fill="#0f172a" stroke="#1e293b" />
+          <text x="22" y="30" fill="#c084fc" font-family="monospace" font-size="12" font-weight="bold">
+            [Q4] PUPPET_SERVER QA VISION &amp; .PCK VERIFIER
+          </text>
+          <rect x="28" y="48" width="420" height="165" fill="none" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="6 4" />
+          <text x="44" y="78" fill="#e2e8f0" font-family="monospace" font-size="12">✓ AST Security Gate: PASS (--sandboxed-pck enforced)</text>
+          <text x="44" y="104" fill="#e2e8f0" font-family="monospace" font-size="12">✓ Cartridge Bundle: ${bundleId}.pck (#${room})</text>
+          <text x="44" y="130" fill="#e2e8f0" font-family="monospace" font-size="12">✓ Draw Call Budget: 112 / 180 max (Vulkan Native)</text>
+          <text x="44" y="156" fill="#e2e8f0" font-family="monospace" font-size="12">✓ Primary Ability: ${abilityName} (${bundle.primary_ability_damage} DMG)</text>
+          <text x="44" y="186" fill="#34d399" font-family="monospace" font-size="12" font-weight="bold">
+            NATIVE CLIENT CLI: playable-client --realm=${room} --pck=${bundleId}.pck
+          </text>
+          <text x="22" y="244" fill="#d8b4fe" font-family="monospace" font-size="11">
+            Headless PuppetServer Snapshot • Zero UI Overlap
+          </text>
+        </g>
+      </svg>
+    `;
+  }
+
+  const isShieldFocus = chapter === 'shield';
+  const isBossFocus = chapter === 'boss';
+  const bossCurrentHp = isBossFocus
+    ? Math.max(420, bundle.boss_max_hp - bundle.primary_ability_damage * 4)
+    : Math.max(800, bundle.boss_max_hp - bundle.primary_ability_damage * 2);
+  const bossHpBarWidth = Math.max(24, Math.round((bossCurrentHp / bundle.boss_max_hp) * 130));
+
+  return `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">
+      <defs>
+        <linearGradient id="dynSky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="${bundle.sky_top_hex}" />
+          <stop offset="100%" stop-color="${bundle.sky_bottom_hex}" />
+        </linearGradient>
+        <radialGradient id="dynGlow" cx="55%" cy="62%" r="45%">
+          <stop offset="0%" stop-color="${bundle.boss_color_hex}" stop-opacity="0.32" />
+          <stop offset="100%" stop-color="#090d16" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+
+      <rect width="960" height="540" fill="url(#dynSky)" />
+      <rect width="960" height="540" fill="url(#dynGlow)" />
+
+      <!-- 3D Arena Deck -->
+      <polygon points="150,435 810,435 925,540 35,540" fill="#111827" stroke="#334155" stroke-width="2" />
+      <polygon points="235,285 725,285 835,435 125,435" fill="#161f33" stroke="${bundle.grid_tint_hex}" stroke-width="2" />
+
+      <g stroke="${bundle.grid_tint_hex}" stroke-width="1" opacity="0.35">
+        <line x1="320" y1="285" x2="245" y2="435" />
+        <line x1="400" y1="285" x2="365" y2="435" />
+        <line x1="480" y1="285" x2="480" y2="435" />
+        <line x1="560" y1="285" x2="595" y2="435" />
+        <line x1="640" y1="285" x2="715" y2="435" />
+        <line x1="200" y1="335" x2="760" y2="335" />
+        <line x1="165" y1="385" x2="795" y2="385" />
+      </g>
+
+      <!-- Hazard Ring -->
+      <ellipse cx="575" cy="345" rx="${Math.min(180, Math.max(95, bundle.hazard_radius + 45))}" ry="52" fill="none" stroke="${bundle.boss_color_hex}" stroke-width="${isBossFocus ? '4' : '2.5'}" stroke-dasharray="10 6">
+        <animate attributeName="rx" values="130;158;130" dur="2.4s" repeatCount="indefinite" />
+        <animate attributeName="stroke-opacity" values="0.95;0.35;0.95" dur="2.4s" repeatCount="indefinite" />
+      </ellipse>
+
+      <!-- CoalVent_01 Node -->
+      <g transform="translate(265, 348)">
+        <ellipse cx="0" cy="18" rx="${isShieldFocus ? '44' : '34'}" ry="14" fill="#0f172a" stroke="#38bdf8" stroke-width="${isShieldFocus ? '3' : '2'}" />
+        <path d="M-20,16 L-12,-18 L12,-18 L20,16 Z" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5" />
+        <circle cx="0" cy="-24" r="${isShieldFocus ? '10' : '7'}" fill="#38bdf8">
+          <animate attributeName="cy" values="-20;-48;-20" dur="1.6s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="1;0.2;1" dur="1.6s" repeatCount="indefinite" />
+        </circle>
+        <text x="0" y="38" fill="#38bdf8" font-family="monospace" font-size="11" text-anchor="middle" font-weight="bold">
+          CoalVent_01 ${isShieldFocus ? '[EXTRACTING ORE -> SHIELD]' : '[5/6 Charges]'}
+        </text>
+      </g>
+
+      ${
+        isShieldFocus
+          ? `<path d="M275,335 Q325,295 375,355" fill="none" stroke="#38bdf8" stroke-width="4" stroke-dasharray="8 4">
+               <animate attributeName="stroke-dashoffset" values="24;0" dur="0.6s" repeatCount="indefinite" />
+             </path>`
+          : ''
+      }
+
+      <!-- PlayerCharacter -->
+      <g transform="translate(375, 375)">
+        <ellipse cx="0" cy="24" rx="28" ry="10" fill="#090d16" opacity="0.7" />
+        <ellipse cx="0" cy="2" rx="${isShieldFocus ? '46' : '36'}" ry="${isShieldFocus ? '20' : '15'}" fill="none" stroke="#38bdf8" stroke-width="${isShieldFocus ? '3.5' : '2.5'}" stroke-dasharray="14 8">
+          <animateTransform attributeName="transform" type="rotate" from="0 0 2" to="360 0 2" dur="3s" repeatCount="indefinite" />
+        </ellipse>
+        <rect x="-12" y="-26" width="24" height="46" rx="8" fill="#38bdf8" stroke="#e0f2fe" stroke-width="2" />
+        <text x="0" y="42" fill="#f8fafc" font-family="monospace" font-size="11" text-anchor="middle" font-weight="bold">
+          PlayerCharacter (Metal Shield +65% Mitigation)
+        </text>
+      </g>
+
+      <!-- Primary Ability Projectile -->
+      <g>
+        <line x1="395" y1="360" x2="545" y2="322" stroke="#38bdf8" stroke-width="${isBossFocus ? '7' : '4.5'}" stroke-linecap="round">
+          <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="1.1s" repeatCount="indefinite" />
+        </line>
+        <text x="468" y="322" fill="#38bdf8" font-family="monospace" font-size="11" text-anchor="middle" font-weight="bold">
+          ${abilityName} (-${bundle.primary_ability_damage} HP)
+        </text>
+      </g>
+
+      <!-- Boss Encounter -->
+      <g transform="translate(575, 315)">
+        <ellipse cx="0" cy="36" rx="46" ry="16" fill="#450a0a" stroke="${bundle.boss_color_hex}" stroke-width="2" />
+        <path d="M-28,32 L-22,-44 L0,-58 L22,-44 L28,32 Z" fill="${bundle.boss_color_hex}" stroke="#fca5a5" stroke-width="2" />
+        <circle cx="-9" cy="-28" r="4" fill="#fef08a" />
+        <circle cx="9" cy="-28" r="4" fill="#fef08a" />
+        <rect x="-66" y="-82" width="132" height="10" rx="5" fill="#0f172a" stroke="#475569" stroke-width="1" />
+        <rect x="-65" y="-81" width="${bossHpBarWidth}" height="8" rx="4" fill="${bundle.boss_color_hex}" />
+        <text x="0" y="-90" fill="#fca5a5" font-family="monospace" font-size="12" text-anchor="middle" font-weight="bold">
+          ${bossName} (${bossCurrentHp} / ${bundle.boss_max_hp} HP)
+        </text>
+        <text x="0" y="56" fill="#fdba74" font-family="monospace" font-size="11" text-anchor="middle">
+          Hazard: ${hazardName}
+        </text>
+      </g>
+
+      <!-- Dialogue & Realm Banner at Bottom -->
+      <rect x="24" y="468" width="912" height="52" rx="8" fill="#090d16" fill-opacity="0.88" stroke="#283548" stroke-width="1.5" />
+      <text x="42" y="490" fill="#38bdf8" font-family="monospace" font-size="12" font-weight="bold">
+        REALM #${room} • BUNDLE: ${bundleId}.pck • ZONE: ${zoneTitle}
+      </text>
+      <text x="42" y="509" fill="#e2e8f0" font-family="monospace" font-size="12">
+        💬 ${dialogue}
+      </text>
+    </svg>
+  `;
+}
+
+function downloadPckBundle(bundle: GeneratedConfigBundle): void {
+  if (bundle.pck_base64) {
+    const binStr = atob(bundle.pck_base64);
+    const bytes = new Uint8Array(binStr.length);
+    for (let i = 0; i < binStr.length; i++) {
+      bytes[i] = binStr.charCodeAt(i);
+    }
+    const blob = new Blob([bytes], { type: 'application/octet-stream' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${bundle.bundle_id}.pck`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } else {
+    const a = document.createElement('a');
+    a.href = '/bundles/cfg_014_rig.pck';
+    a.download = `${bundle.bundle_id}.pck`;
+    a.click();
+  }
+}
+
+function downloadJsonManifest(bundle: GeneratedConfigBundle): void {
+  const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${bundle.bundle_id}.playable.bundle.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function updateNativeClientCallout(bundle: GeneratedConfigBundle, roomCode: string): void {
+  const zoneTitleEl = document.getElementById('callout-zone-title');
+  const cliCommandEl = document.getElementById('cli-launch-command');
+  const deepLinkEl = document.getElementById('btn-launch-deeplink') as HTMLAnchorElement | null;
+  const pckFileEl = document.getElementById('demo-pck-filename');
+  const jsonFileEl = document.getElementById('demo-json-filename');
+
+  if (zoneTitleEl) {
+    zoneTitleEl.textContent = bundle.zone_title;
+  }
+  if (cliCommandEl) {
+    cliCommandEl.textContent = `playable-client --realm=${roomCode} --pck=${bundle.bundle_id}.pck --sandboxed-pck`;
+  }
+  if (deepLinkEl) {
+    deepLinkEl.href = `playable://join/${roomCode}?pck=${bundle.bundle_id}.pck`;
+    deepLinkEl.innerHTML = `🚀 Open in Installed Launcher (<code>playable://join/${roomCode}</code>)`;
+  }
+  if (pckFileEl) {
+    pckFileEl.textContent = `${bundle.bundle_id}.pck`;
+  }
+  if (jsonFileEl) {
+    jsonFileEl.textContent = `${bundle.bundle_id}.playable.bundle.json`;
+  }
+}
+
 function renderBuildStages(job: BuildJob, currentBundle: GeneratedConfigBundle): void {
   const grid = document.getElementById('build-steps-grid');
   const banner = document.getElementById('build-result-banner');
@@ -260,7 +556,7 @@ function renderBuildStages(job: BuildJob, currentBundle: GeneratedConfigBundle):
       <code>${job.pck_bundle_name}</code> (${job.pck_size_mb} MB) via <strong>${llmBadge}</strong>.
     </div>
     <div>
-      <span>Preview Server Ready: <strong class="room-code-badge">#${job.preview_room_code}</strong></span>
+      <span>Native Preview Server Ready: <strong class="room-code-badge">#${job.preview_room_code}</strong></span>
     </div>
   `;
 
@@ -270,24 +566,9 @@ function renderBuildStages(job: BuildJob, currentBundle: GeneratedConfigBundle):
   if (bundleViewer) {
     const displayCopy = { ...currentBundle };
     if (displayCopy.pck_base64 && displayCopy.pck_base64.length > 96) {
-      displayCopy.pck_base64 = `${displayCopy.pck_base64.slice(0, 96)}... [${displayCopy.pck_size_bytes || 36640} bytes binary .pck]`;
+      displayCopy.pck_base64 = `${displayCopy.pck_base64.slice(0, 96)}... [${displayCopy.pck_size_bytes || 54912} bytes binary .pck]`;
     }
     bundleViewer.textContent = JSON.stringify(displayCopy, null, 2);
-  }
-}
-
-function mountBundleIntoGodotWasm(bundle: GeneratedConfigBundle): void {
-  const frame = document.getElementById('godot-wasm-frame') as HTMLIFrameElement | null;
-  if (!frame || !frame.contentWindow) return;
-  const win = frame.contentWindow as Window & {
-    playableMountPckBase64?: (realmId: string, b64: string, jsonStr: string) => void;
-    playableHotReloadBundle?: (jsonStr: string) => void;
-  };
-  const jsonStr = JSON.stringify(bundle);
-  if (bundle.pck_base64 && typeof win.playableMountPckBase64 === 'function') {
-    win.playableMountPckBase64(bundle.bundle_id, bundle.pck_base64, jsonStr);
-  } else if (typeof win.playableHotReloadBundle === 'function') {
-    win.playableHotReloadBundle(jsonStr);
   }
 }
 
@@ -339,12 +620,14 @@ function renderCartridges(cartridges: CartridgeInfo[]): void {
 }
 
 async function initApp(): Promise<void> {
-  const canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
+  const videoEl = document.getElementById('demo-showcase-video') as HTMLVideoElement | null;
+  const svgStreamEl = document.getElementById('showcase-svg-stream') as HTMLElement | null;
+  const chapterLabelEl = document.getElementById('showcase-chapter-label') as HTMLElement | null;
   const telemetryPre = document.getElementById('telemetry-log') as HTMLPreElement;
   const ventChargesEl = document.getElementById('hud-vent-charges') as HTMLElement;
   const wardenHpEl = document.getElementById('hud-warden-hp') as HTMLElement;
   const drawCallsEl = document.getElementById('hud-draw-calls') as HTMLElement;
-  const earthLanceBtn = document.getElementById('btn-earth-lance') as HTMLButtonElement;
+  const earthLanceBtn = document.getElementById('btn-earth-lance') as HTMLButtonElement | null;
   const dialog = document.getElementById('info-dialog') as HTMLDialogElement;
   const dialogTitle = document.getElementById('dialog-title') as HTMLElement;
   const dialogBody = document.getElementById('dialog-body') as HTMLElement;
@@ -353,98 +636,221 @@ async function initApp(): Promise<void> {
 
   let latestBundle: GeneratedConfigBundle = DEFAULT_CONFIG_BUNDLE;
   let latestRoomCode = 'TEST-4821';
+  let activeChapter: ShowcaseChapter = 'arena';
 
   const telemetryLines: string[] = [
-    JSON.stringify({ ts: 1792698012, tick: 120, branch: 'feat/prison-rig', event: 'SCENE_MOUNTED', scene: 'res://scenes/zones/fire_prison_rig.tscn' }),
-    JSON.stringify({ ts: 1792698045, tick: 1420, branch: 'feat/prison-rig', bot_id: 'QA_Bot_04', event: 'COMBAT_SUMMARY', outcome: 'WIN', dps_dealt: 64.1 }),
+    JSON.stringify({
+      ts: 1792698012,
+      tick: 120,
+      runtime: 'Godot-4.7.2-Native-Vulkan',
+      branch: 'feat/prison-rig',
+      event: 'SCENE_MOUNTED',
+      scene: 'res://scenes/zones/fire_prison_rig.tscn',
+    }),
+    JSON.stringify({
+      ts: 1792698045,
+      tick: 1420,
+      bot_id: 'QA_Bot_04',
+      event: 'COMBAT_SUMMARY',
+      outcome: 'WIN',
+      dps_dealt: 64.1,
+    }),
   ];
   telemetryPre.textContent = telemetryLines.join('\n\n');
 
-  const demo = new BoilingIronRigDemo(canvas, {
-    onTelemetryEvent: (entry) => {
-      telemetryLines.unshift(JSON.stringify(entry));
-      if (telemetryLines.length > 8) telemetryLines.pop();
-      telemetryPre.textContent = telemetryLines.join('\n\n');
-    },
-    onHudUpdate: ({ ventCharges, wardenHp, wardenMaxHp, drawCalls }) => {
-      ventChargesEl.textContent = `${ventCharges} / 6`;
-      wardenHpEl.textContent = `${wardenHp} / ${wardenMaxHp}`;
-      drawCallsEl.textContent = `${drawCalls} / 180`;
-    },
+  const appendTelemetry = (entry: Record<string, unknown>): void => {
+    telemetryLines.unshift(JSON.stringify({ ts: Math.floor(Date.now() / 1000), ...entry }));
+    if (telemetryLines.length > 8) telemetryLines.pop();
+    telemetryPre.textContent = telemetryLines.join('\n\n');
+  };
+
+  if (videoEl && SHOWCASE_VIDEO_CDN_URL) {
+    videoEl.src = SHOWCASE_VIDEO_CDN_URL;
+    if (svgStreamEl) {
+      svgStreamEl.style.pointerEvents = 'none';
+      svgStreamEl.style.opacity = '0';
+    }
+  }
+
+  const renderShowcaseChapter = (chapter: ShowcaseChapter): void => {
+    activeChapter = chapter;
+    document.querySelectorAll<HTMLButtonElement>('.showcase-tab').forEach((btn) => {
+      const isMatch = btn.dataset.chapter === chapter;
+      btn.classList.toggle('active', isMatch);
+      btn.setAttribute('aria-selected', isMatch ? 'true' : 'false');
+    });
+
+    if (videoEl) {
+      videoEl.poster =
+        chapter === 'quad-qa'
+          ? '/showcase/quad-qa-telemetry-poster.svg'
+          : '/showcase/arena-gameplay-poster.svg';
+    }
+
+    if (svgStreamEl) {
+      svgStreamEl.innerHTML = buildShowcaseSvgMarkup(chapter, latestBundle, latestRoomCode);
+    }
+
+    const chapterTitles: Record<ShowcaseChapter, string> = {
+      arena: `RECORDED NATIVE VULKAN CAPTURE • 3rd-Person Arena Gameplay (${latestBundle.zone_title})`,
+      'quad-qa': `HEADLESS PUPPET_SERVER CAPTURE • 4-Quadrant QA Vision & Jolt Collision Wireframe`,
+      shield: `CHAPTER 3 CAPTURE • CoalVent_01 Extraction & Orbiting Metal Shield (+65% Mitigation)`,
+      boss: `CHAPTER 4 CAPTURE • ${latestBundle.primary_ability_name} (${latestBundle.primary_ability_damage} DMG) vs ${latestBundle.boss_name}`,
+    };
+    if (chapterLabelEl) {
+      chapterLabelEl.textContent = chapterTitles[chapter];
+    }
+
+    if (chapter === 'shield') {
+      ventChargesEl.textContent = '5 / 6';
+      drawCallsEl.textContent = '114 / 180';
+    } else if (chapter === 'boss') {
+      const remainingHp = Math.max(420, latestBundle.boss_max_hp - latestBundle.primary_ability_damage * 4);
+      wardenHpEl.textContent = `${remainingHp} / ${latestBundle.boss_max_hp}`;
+      drawCallsEl.textContent = '118 / 180';
+    } else {
+      ventChargesEl.textContent = '6 / 6';
+      wardenHpEl.textContent = `${latestBundle.boss_max_hp} / ${latestBundle.boss_max_hp}`;
+      drawCallsEl.textContent = '112 / 180';
+    }
+  };
+
+  renderShowcaseChapter('arena');
+  updateNativeClientCallout(latestBundle, latestRoomCode);
+
+  // Wire Chapter Tabs
+  document.querySelectorAll<HTMLButtonElement>('.showcase-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const ch = (tab.dataset.chapter as ShowcaseChapter) || 'arena';
+      renderShowcaseChapter(ch);
+      appendTelemetry({
+        event: 'SHOWCASE_CHAPTER_SELECTED',
+        chapter: ch,
+        bundle_id: latestBundle.bundle_id,
+        room_code: latestRoomCode,
+      });
+    });
   });
 
-  // Wire Demo Controls
+  // Wire Demo Toolbar & Sidebar Chapter Preview Buttons
   document.getElementById('btn-toggle-quad')?.addEventListener('click', () => {
-    const frame = document.getElementById('godot-wasm-frame') as HTMLIFrameElement | null;
-    const canvasEl = document.getElementById('game-canvas') as HTMLCanvasElement | null;
-    if (frame && canvasEl) {
-      const showingQuad = canvasEl.style.display !== 'none';
-      if (showingQuad) {
-        canvasEl.style.display = 'none';
-        frame.style.display = 'block';
-      } else {
-        frame.style.display = 'none';
-        canvasEl.style.display = 'block';
-        demo.quadDebugMode = true;
-      }
-    } else {
-      demo.toggleQuadDebug();
-    }
+    const nextChapter: ShowcaseChapter = activeChapter === 'quad-qa' ? 'arena' : 'quad-qa';
+    renderShowcaseChapter(nextChapter);
+    appendTelemetry({
+      event: 'QUAD_QA_TELEMETRY_TOGGLED',
+      mode: nextChapter,
+      bundle_id: latestBundle.bundle_id,
+    });
   });
+
   document.getElementById('btn-extract-coal')?.addEventListener('click', () => {
-    demo.extractCoalAndShield();
+    renderShowcaseChapter('shield');
+    appendTelemetry({
+      event: 'SHOWCASE_PREVIEW_COAL_VENT_SHIELD',
+      node: 'CoalVent_01',
+      mitigation_pct: 65,
+      vent_charges_remaining: 5,
+    });
   });
+
   document.getElementById('btn-earth-lance')?.addEventListener('click', () => {
-    demo.castEarthLance();
+    renderShowcaseChapter('boss');
+    appendTelemetry({
+      event: 'SHOWCASE_PREVIEW_PRIMARY_ABILITY',
+      ability: latestBundle.primary_ability_name,
+      damage: latestBundle.primary_ability_damage,
+      target: latestBundle.boss_name,
+    });
   });
 
   document.getElementById('btn-run-bot-swarm')?.addEventListener('click', async () => {
+    renderShowcaseChapter('quad-qa');
     const res = await fetchJsonOrFallback(
       '/verify/bot-swarm',
-      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ duration_sec: 30, time_scale: 10.0 }) },
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ duration_sec: 30, time_scale: 10.0 }),
+      },
       { status: 'PASS', total_ticks: 1800, nav_stuck_count: 0, script_error_count: 0 }
     );
-    telemetryLines.unshift(JSON.stringify({ event: 'BOT_SWARM_QA_PASS', ...res }));
-    telemetryPre.textContent = telemetryLines.join('\n\n');
+    appendTelemetry({ event: 'BOT_SWARM_QA_PASS', ...res });
   });
 
-  // Mount & Download Config Bundle buttons
-  document.getElementById('btn-mount-bundle')?.addEventListener('click', () => {
-    mountBundleIntoGodotWasm(latestBundle);
-    demo.mountConfigBundle(latestBundle, latestRoomCode);
-    if (earthLanceBtn) {
-      earthLanceBtn.textContent = `⚡ Cast ${latestBundle.primary_ability_name} (${latestBundle.primary_ability_damage} DMG)`;
+  // Wire Copy CLI Command & Deep-Link Buttons
+  const copyCliBtn = document.getElementById('btn-copy-cli') as HTMLButtonElement | null;
+  copyCliBtn?.addEventListener('click', async () => {
+    const cmd = `playable-client --realm=${latestRoomCode} --pck=${latestBundle.bundle_id}.pck --sandboxed-pck`;
+    try {
+      await navigator.clipboard.writeText(cmd);
+      copyCliBtn.textContent = '✓ Copied CLI Command!';
+    } catch {
+      copyCliBtn.textContent = '✓ Staged CLI Command';
     }
+    appendTelemetry({
+      event: 'NATIVE_CLI_COMMAND_COPIED',
+      command: cmd,
+    });
+    window.setTimeout(() => {
+      if (copyCliBtn) copyCliBtn.textContent = '📋 Copy CLI Command';
+    }, 2200);
+  });
+
+  document.getElementById('btn-launch-deeplink')?.addEventListener('click', () => {
+    appendTelemetry({
+      event: 'NATIVE_LAUNCHER_DEEPLINK_INVOKED',
+      uri: `playable://join/${latestRoomCode}?pck=${latestBundle.bundle_id}.pck`,
+    });
+  });
+
+  document.querySelectorAll<HTMLAnchorElement>('.binary-dl-card').forEach((card) => {
+    card.addEventListener('click', () => {
+      appendTelemetry({
+        event: 'NATIVE_CLIENT_BINARY_DOWNLOAD',
+        binary: card.dataset.binary || 'PlayableLauncher',
+        realm: latestRoomCode,
+      });
+    });
+  });
+
+  // Mount / Stage & Download Config Bundle buttons (both in Demo Callout and Creator Studio)
+  document.getElementById('btn-mount-bundle')?.addEventListener('click', () => {
+    updateNativeClientCallout(latestBundle, latestRoomCode);
+    renderShowcaseChapter('arena');
+    if (earthLanceBtn) {
+      earthLanceBtn.textContent = `⚡ Preview Ch 4: Cast ${latestBundle.primary_ability_name} (${latestBundle.primary_ability_damage} DMG)`;
+    }
+    appendTelemetry({
+      event: 'BUNDLE_STAGED_FOR_NATIVE_CLIENT',
+      bundle_id: latestBundle.bundle_id,
+      room_code: latestRoomCode,
+      cli: `playable-client --realm=${latestRoomCode} --pck=${latestBundle.bundle_id}.pck`,
+    });
     document.getElementById('playable-demo')?.scrollIntoView({ behavior: 'smooth' });
   });
 
   document.getElementById('btn-download-pck')?.addEventListener('click', () => {
-    if (latestBundle.pck_base64) {
-      const binStr = atob(latestBundle.pck_base64);
-      const bytes = new Uint8Array(binStr.length);
-      for (let i = 0; i < binStr.length; i++) {
-        bytes[i] = binStr.charCodeAt(i);
-      }
-      const blob = new Blob([bytes], { type: 'application/octet-stream' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${latestBundle.bundle_id}.pck`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } else {
-      window.open('./godot/index.pck', '_blank');
-    }
+    downloadPckBundle(latestBundle);
+    appendTelemetry({ event: 'CARTRIDGE_PCK_DOWNLOADED', file: `${latestBundle.bundle_id}.pck` });
+  });
+  document.getElementById('btn-demo-download-pck')?.addEventListener('click', () => {
+    downloadPckBundle(latestBundle);
+    appendTelemetry({ event: 'CARTRIDGE_PCK_DOWNLOADED', file: `${latestBundle.bundle_id}.pck` });
   });
 
   document.getElementById('btn-download-bundle')?.addEventListener('click', () => {
-    const blob = new Blob([JSON.stringify(latestBundle, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${latestBundle.bundle_id}.playable.bundle.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadJsonManifest(latestBundle);
+    appendTelemetry({
+      event: 'CARTRIDGE_MANIFEST_DOWNLOADED',
+      file: `${latestBundle.bundle_id}.playable.bundle.json`,
+    });
+  });
+  document.getElementById('btn-demo-download-bundle')?.addEventListener('click', () => {
+    downloadJsonManifest(latestBundle);
+    appendTelemetry({
+      event: 'CARTRIDGE_MANIFEST_DOWNLOADED',
+      file: `${latestBundle.bundle_id}.playable.bundle.json`,
+    });
   });
 
   // Load initial data from playable-server
@@ -469,23 +875,29 @@ async function initApp(): Promise<void> {
       }
       if (!res.ok) {
         showServerAlert(
-          `playable-server returned HTTP ${res.status} for POST /api/rooms/join (#${code}). Using local fallback sandbox.`,
+          `playable-server returned HTTP ${res.status} for POST /api/rooms/join (#${code}). Room not staged.`,
           'warning'
         );
-        demo.activeRoomCode = code;
-        feedback.innerHTML = `<strong>Warning (HTTP ${res.status}):</strong> Room <strong>#${code}</strong> not found on server — mounted local fallback <code>user://realms/${code.toLowerCase()}/patch.pck</code>`;
+        feedback.innerHTML = `<strong>Warning (HTTP ${res.status}):</strong> Room <strong>#${code}</strong> not found on server.`;
         return;
       }
       const joined = (await res.json()) as { wake_time_ms: number; sandbox_mount_path: string };
-      demo.activeRoomCode = code;
-      feedback.innerHTML = `Connected to <strong>#${code}</strong> in ${joined.wake_time_ms}ms — Mounted <code>${joined.sandbox_mount_path}</code>`;
+      latestRoomCode = code;
+      updateNativeClientCallout(latestBundle, latestRoomCode);
+      renderShowcaseChapter(activeChapter);
+      feedback.innerHTML = `Staged <strong>#${code}</strong> (${joined.wake_time_ms}ms wake) � Launch via <code>playable://join/${code}</code> or CLI`;
+      appendTelemetry({
+        event: 'REALM_ROOM_STAGED',
+        room_code: code,
+        wake_time_ms: joined.wake_time_ms,
+        sandbox_mount_path: joined.sandbox_mount_path,
+      });
     } catch {
       showServerAlert(
-        `playable-server was unreachable for POST /api/rooms/join (#${code}). Mounted local offline sandbox.`,
+        `playable-server was unreachable for POST /api/rooms/join (#${code}). Room not staged.`,
         'warning'
       );
-      demo.activeRoomCode = code;
-      feedback.innerHTML = `<strong>Warning (playable-server unreachable):</strong> Connected to local preview <strong>#${code}</strong> — Mounted <code>user://realms/${code.toLowerCase()}/patch.pck</code>`;
+      feedback.innerHTML = `<strong>Warning (playable-server unreachable):</strong> could not stage <strong>#${code}</strong>.`;
     }
   };
 
@@ -504,6 +916,7 @@ async function initApp(): Promise<void> {
     latestBundle = initialBuilds[0].config_bundle || DEFAULT_CONFIG_BUNDLE;
     latestRoomCode = initialBuilds[0].preview_room_code;
     renderBuildStages(initialBuilds[0], latestBundle);
+    // keep HEAD pck fetch for list responses that redact pck_base64
     if (!latestBundle.pck_base64 && initialBuilds[0].build_id) {
       const pckDetail = await fetchJsonOrFallback<{ pck_base64?: string; pck_size_bytes?: number }>(
         `/api/builds/${initialBuilds[0].build_id}/pck`,
@@ -515,6 +928,8 @@ async function initApp(): Promise<void> {
         latestBundle.pck_size_bytes = pckDetail.pck_size_bytes;
       }
     }
+    updateNativeClientCallout(latestBundle, latestRoomCode);
+    renderShowcaseChapter(activeChapter);
   } else {
     renderBuildStages(
       {
@@ -557,7 +972,7 @@ async function initApp(): Promise<void> {
             stage_key: 'package_deploy',
             title: 'Packager & Realm Deploy',
             status: 'COMPLETED',
-            detail: 'Exported patch_v14.pck (18.4 MB) to R2 and launched Preview Server Room #TEST-4821.',
+            detail: 'Exported cfg_014_rig.pck (18.4 MB) to R2 and staged Native Preview Server Room #TEST-4821.',
             duration_ms: 290,
           },
         ],
@@ -568,7 +983,7 @@ async function initApp(): Promise<void> {
   }
 
   // Handle Prompt Submission (4-Step Streamlined Build Pipeline + Live Doubleword Config Generation)
-  const submitBtn = document.getElementById('btn-submit-build') as HTMLButtonElement;
+  const submitBtn = document.getElementById('btn-submit-build') as HTMLButtonElement | null;
   const runPromptBuild = async (promptText: string, cartridgeId: string) => {
     if (submitBtn) {
       submitBtn.disabled = true;
@@ -643,13 +1058,19 @@ async function initApp(): Promise<void> {
       latestBundle = job.config_bundle || DEFAULT_CONFIG_BUNDLE;
       latestRoomCode = job.preview_room_code;
       renderBuildStages(job, latestBundle);
-      mountBundleIntoGodotWasm(latestBundle);
-      demo.mountConfigBundle(latestBundle, latestRoomCode);
+      updateNativeClientCallout(latestBundle, latestRoomCode);
+      renderShowcaseChapter(activeChapter);
       if (earthLanceBtn) {
-        earthLanceBtn.textContent = `⚡ Cast ${latestBundle.primary_ability_name} (${latestBundle.primary_ability_damage} DMG)`;
+        earthLanceBtn.textContent = `⚡ Preview Ch 4: Cast ${latestBundle.primary_ability_name} (${latestBundle.primary_ability_damage} DMG)`;
       }
       rooms = await fetchJsonOrFallback('/api/rooms', undefined, FALLBACK_ROOMS);
       renderRoomsList(rooms, joinRoomByCode);
+      appendTelemetry({
+        event: 'BUILD_PIPELINE_COMPLETED',
+        build_id: job.build_id,
+        bundle_id: latestBundle.bundle_id,
+        preview_room_code: latestRoomCode,
+      });
     } finally {
       if (submitBtn) {
         submitBtn.disabled = false;
@@ -678,20 +1099,23 @@ async function initApp(): Promise<void> {
   });
 
   document.getElementById('btn-hold-l1')?.addEventListener('click', async () => {
-    const voicePrompt = 'Transform the rig into a Frozen Glacier Fortress with Cryo-Warden Vael (3200 HP) and Ice Lance (290 DMG)';
+    const voicePrompt =
+      'Transform the rig into a Frozen Glacier Fortress with Cryo-Warden Vael (3200 HP) and Ice Lance (290 DMG)';
     await runPromptBuild(voicePrompt, 'template-action-rpg');
   });
 
   document.getElementById('btn-open-launcher')?.addEventListener('click', () => {
-    dialogTitle.textContent = 'Download Free Universal Player Launcher (£0.00)';
+    dialogTitle.textContent = 'Download Free Universal Native Player Launcher (£0.00)';
     dialogBody.innerHTML = `
-      <p><strong>One Signed Binary, Infinite <code>.pck</code> Realms.</strong></p>
-      <p>Pre-compiled with Godot 4.7.2-stable, native <code>JoltPhysics3D</code>, <code>Terrain3D</code>, <code>godot_voxel</code>, <code>LimboAI</code>, and <code>--sandboxed-pck</code> security isolation.</p>
+      <p><strong>One Signed Native Binary, Infinite <code>.pck</code> Realms.</strong></p>
+      <p>Pre-compiled with Godot 4.7.2-stable, native C++ <code>JoltPhysics3D</code>, <code>Terrain3D</code>, <code>godot_voxel</code>, <code>LimboAI</code>, <code>godot-sqlite</code>, and <code>--sandboxed-pck</code> security isolation.</p>
       <ul class="feature-list">
         <li>• Windows (x86_64 Vulkan / D3D12) — <code>PlayableLauncher-win64.exe</code></li>
-        <li>• macOS Universal (Apple Silicon / Metal) — <code>PlayableLauncher-macOS.dmg</code></li>
-        <li>• Linux / Steam Deck (AppImage) — <code>PlayableLauncher-x86_64.AppImage</code></li>
+        <li>• macOS Universal (Apple Silicon / Metal 3) — <code>PlayableLauncher-macOS.dmg</code></li>
+        <li>• Linux / Steam Deck (x86_64 AppImage) — <code>PlayableLauncher-x86_64.AppImage</code></li>
       </ul>
+      <p style="margin-top: 0.5rem;">Launch any downloaded realm directly via CLI:</p>
+      <code style="display: block; padding: 0.6rem; background: #090d16; border-radius: 0.4rem; color: #38bdf8;">playable-client --realm=${latestRoomCode} --pck=${latestBundle.bundle_id}.pck --sandboxed-pck</code>
     `;
     dialog.showModal();
   });

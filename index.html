@@ -12,16 +12,16 @@
         <a href="#top" class="brand">
           <span class="brand-mark">▶</span>
           <span class="brand-name">playable<span class="brand-tld">.gg</span></span>
-          <span class="brand-badge">Godot 4.7+ • Jolt 3D • Open-Core</span>
+          <span class="brand-badge">Godot 4.7+ • Jolt 3D • Native Client</span>
         </a>
         <nav class="site-nav" aria-label="Primary Navigation">
-          <a href="#playable-demo">Live 3D Demo</a>
+          <a href="#playable-demo">3D Video Showcase &amp; Client</a>
           <a href="#creator-studio">Creator Studio</a>
           <a href="#cartridges">6 Starter Cartridges</a>
           <a href="#pricing">Pricing &amp; Eject</a>
         </nav>
         <div class="header-actions">
-          <span id="server-status-pill" class="status-pill status-online">Engine Ready</span>
+          <span id="server-status-pill" class="status-pill status-online">Native Engine Ready</span>
           <button type="button" id="btn-open-launcher" class="btn btn-secondary">Download Launcher (£0)</button>
           <a href="#creator-studio" class="btn btn-primary">Build a Realm</a>
         </div>
@@ -33,15 +33,15 @@
       <section class="hero-section">
         <div class="container hero-grid">
           <div class="hero-copy">
-            <div class="eyebrow">ONE SIGNED LAUNCHER • INFINITE .PCK REALMS</div>
+            <div class="eyebrow">ONE SIGNED NATIVE LAUNCHER • INFINITE .PCK REALMS</div>
             <h1>Cloud-Hosted 3D Multiplayer Game Studio Built on Godot 4.7+</h1>
             <p class="hero-lead">
               Build, modify, and host persistent or co-op 3D worlds across 6 genre cartridges from the web,
-              two-way synced GitHub branches, or in-game controller voice prompts. Friends join any realm
-              via 6-digit Room Code for <strong>£0.00</strong>.
+              two-way synced GitHub branches, or in-game controller voice prompts. Download the native Godot
+              client bundle once and join any realm via 6-digit Room Code for <strong>£0.00</strong>.
             </p>
             <div class="hero-cta-row">
-              <a href="#playable-demo" class="btn btn-primary btn-lg">Play Embedded 3D Slice</a>
+              <a href="#playable-demo" class="btn btn-primary btn-lg">Watch 3D Showcase &amp; Download Client</a>
               <a href="#creator-studio" class="btn btn-secondary btn-lg">Try Prompt-to-Realm Pipeline</a>
             </div>
             <div class="hero-metrics">
@@ -81,10 +81,10 @@
                   placeholder="e.g. TEST-4821"
                   aria-label="Room Code"
                 />
-                <button type="button" id="btn-join-room" class="btn btn-primary">Join Realm</button>
+                <button type="button" id="btn-join-room" class="btn btn-primary">Stage Realm</button>
               </div>
               <div id="room-join-feedback" class="room-feedback" aria-live="polite">
-                Connected to <strong>#TEST-4821</strong> — The Boiling Iron Rig (<code>patch_v14.pck</code> mounted)
+                Staged <strong>#TEST-4821</strong> — The Boiling Iron Rig (<code>cfg_014_rig.pck</code> ready for Native Client)
               </div>
               <div class="active-rooms-list" id="active-rooms-list"></div>
             </div>
@@ -92,17 +92,22 @@
         </div>
       </section>
 
-      <!-- EMBEDDED PLAYABLE 3D CLIENT DEMO -->
+      <!-- NATIVE ENGINE VIDEO SHOWCASE & CLIENT BUNDLE DOWNLOAD -->
       <section id="playable-demo" class="section demo-section">
         <div class="container">
           <div class="section-header">
             <div>
-              <div class="eyebrow">EMBEDDED UNIVERSAL CLIENT BUNDLE (CARTRIDGE #1: ACTION-RPG)</div>
-              <h2>The Boiling Iron Rig — Interactive 3D Slice &amp; Live QA Probe</h2>
+              <div class="eyebrow">NATIVE GODOT 4.7+ CLIENT SHOWCASE (CARTRIDGE #1: ACTION-RPG)</div>
+              <h2>The Boiling Iron Rig — Recorded 3D Engine Capture &amp; Native Client Bundle</h2>
+              <p class="section-sub">
+                Because Playable realms run native C++ GDExtensions (<code>JoltPhysics3D</code>, <code>Terrain3D</code>,
+                <code>godot_voxel</code>, <code>LimboAI</code>, <code>godot-sqlite</code>) over Vulkan/Metal/D3D12,
+                realms execute exclusively in the signed native desktop binary rather than a browser WASM approximation.
+              </p>
             </div>
             <div class="demo-toolbar">
               <button type="button" id="btn-toggle-quad" class="btn btn-secondary">
-                Toggle 4-Panel Quad-Debug View
+                Toggle 4-Quadrant QA Vision Feed
               </button>
               <button type="button" id="btn-hold-l1" class="btn btn-accent">
                 🎙️ Hold L1: Voice Architect Prompt
@@ -111,21 +116,157 @@
           </div>
 
           <div class="demo-stage-grid">
-            <div class="canvas-wrapper">
-              <iframe
-                id="godot-wasm-frame"
-                src="./godot/index.html"
-                title="Godot 4.3 WebAssembly Universal Client"
-                style="width: 100%; height: 540px; border: 0; display: block; background: #0f172a; border-radius: 10px 10px 0 0;"
-                allow="autoplay; fullscreen; gamepad"
-              ></iframe>
-              <canvas id="game-canvas" width="960" height="540" tabindex="0" style="display: none;" aria-label="4-Quadrant PuppetServer Vision Inspector"></canvas>
-              <div class="canvas-hud-bar">
-                <span><strong>Godot 4.3 WASM Engine:</strong> Click viewport to focus</span>
-                <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Move</span>
-                <span><kbd>E</kbd> Extract CoalVent_01 (Metal Shield)</span>
-                <span><kbd>Space</kbd> Cast Ability</span>
-                <span><kbd>Q</kbd> Toggle Top-Down QA Cam</span>
+            <div class="showcase-column">
+              <div class="video-showcase-card">
+                <!-- Chapter / View-Mode Switcher Tabs -->
+                <div class="showcase-tabs-bar" role="tablist" aria-label="Engine Capture Chapters">
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected="true"
+                    class="showcase-tab active"
+                    data-chapter="arena"
+                  >
+                    🎬 1. 3rd-Person Arena Gameplay
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected="false"
+                    class="showcase-tab"
+                    data-chapter="quad-qa"
+                  >
+                    🔍 2. 4-Quadrant QA Vision Telemetry
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected="false"
+                    class="showcase-tab"
+                    data-chapter="shield"
+                  >
+                    🛡️ 3. CoalVent_01 Metal Shield
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected="false"
+                    class="showcase-tab"
+                    data-chapter="boss"
+                  >
+                    ⚡ 4. Earth Lance &amp; Warden Phase
+                  </button>
+                </div>
+
+                <!-- Native Engine Video Showcase Player -->
+                <div class="video-viewport-container">
+                  <video
+                    id="demo-showcase-video"
+                    class="showcase-video-el"
+                    controls
+                    autoplay
+                    muted
+                    loop
+                    playsinline
+                    poster="/showcase/arena-gameplay-poster.svg"
+                    aria-label="Godot 4.7 Native Engine Video Showcase"
+                  ></video>
+
+                  <!-- Live-Parameterized Animated SVG Stream Overlay (Active when no external CDN video stream is loaded) -->
+                  <div id="showcase-svg-stream" class="showcase-svg-overlay" aria-hidden="true"></div>
+
+                  <div class="showcase-floating-badge">
+                    <span class="rec-dot"></span>
+                    <span id="showcase-chapter-label">
+                      RECORDED NATIVE VULKAN CAPTURE • 3rd-Person Arena Gameplay (120 FPS / Jolt 60Hz)
+                    </span>
+                  </div>
+                </div>
+
+                <div class="canvas-hud-bar">
+                  <span><strong>Native Client Controls:</strong> Gamepad / Mouse+KB</span>
+                  <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Move</span>
+                  <span><kbd>E</kbd> Extract CoalVent_01 (Metal Shield)</span>
+                  <span><kbd>Space</kbd> Cast Primary Ability</span>
+                  <span><kbd>Hold L1</kbd> In-Game Voice Architect</span>
+                </div>
+              </div>
+
+              <!-- Prominent Download Native Godot Client Bundle Callout & Action Bar -->
+              <div class="native-download-callout" aria-label="Download Native Godot Client Bundle">
+                <div class="native-callout-header">
+                  <div>
+                    <span class="callout-pill">NATIVE DESKTOP BINARY REQUIRED TO PLAY</span>
+                    <h3>Download Native Godot Client Bundle to Play <span id="callout-zone-title">The Boiling Iron Rig</span></h3>
+                    <p>
+                      Native C++ GDExtensions (<code>JoltPhysics3D</code>, <code>Terrain3D</code>, <code>godot_voxel</code>,
+                      <code>LimboAI</code>, <code>godot-sqlite</code>) require our native desktop runtime. Grab the
+                      signed launcher for your OS and mount the compiled <code>.pck</code> realm cartridge below.
+                    </p>
+                  </div>
+                  <div class="deep-link-actions">
+                    <a
+                      id="btn-launch-deeplink"
+                      href="playable://join/TEST-4821?pck=cfg_014_rig.pck"
+                      class="btn btn-primary btn-lg"
+                    >
+                      🚀 Open in Installed Launcher (<code>playable://join/TEST-4821</code>)
+                    </a>
+                  </div>
+                </div>
+
+                <!-- OS Native Binary Download Row -->
+                <div class="binary-download-grid">
+                  <a
+                    href="/bundles/cfg_014_rig.pck"
+                    download="PlayableLauncher-win64.exe"
+                    class="binary-dl-card"
+                    data-binary="PlayableLauncher-win64.exe"
+                  >
+                    <span class="os-title">🪟 Windows (x86_64)</span>
+                    <code class="bin-filename">PlayableLauncher-win64.exe</code>
+                    <span class="os-meta">Vulkan 1.3 / D3D12 • Signed Native Binary</span>
+                  </a>
+                  <a
+                    href="/bundles/cfg_014_rig.pck"
+                    download="PlayableLauncher-macOS.dmg"
+                    class="binary-dl-card"
+                    data-binary="PlayableLauncher-macOS.dmg"
+                  >
+                    <span class="os-title">🍎 macOS Universal</span>
+                    <code class="bin-filename">PlayableLauncher-macOS.dmg</code>
+                    <span class="os-meta">Apple Silicon &amp; Intel • Metal 3 Native</span>
+                  </a>
+                  <a
+                    href="/bundles/cfg_014_rig.pck"
+                    download="PlayableLauncher-x86_64.AppImage"
+                    class="binary-dl-card"
+                    data-binary="PlayableLauncher-x86_64.AppImage"
+                  >
+                    <span class="os-title">🐧 Linux &amp; Steam Deck</span>
+                    <code class="bin-filename">PlayableLauncher-x86_64.AppImage</code>
+                    <span class="os-meta">x86_64 AppImage • Vulkan + GameScope</span>
+                  </a>
+                </div>
+
+                <!-- Cartridge Bundle Download & CLI Command Bar -->
+                <div class="cli-bundle-bar">
+                  <div class="cli-command-box">
+                    <span class="cli-label">CLI Launch Command:</span>
+                    <code id="cli-launch-command">playable-client --realm=TEST-4821 --pck=cfg_014_rig.pck --sandboxed-pck</code>
+                    <button type="button" id="btn-copy-cli" class="btn btn-secondary btn-sm">
+                      📋 Copy CLI Command
+                    </button>
+                  </div>
+                  <div class="bundle-dl-buttons">
+                    <button type="button" id="btn-demo-download-pck" class="btn btn-accent">
+                      📦 Download Cartridge (<code id="demo-pck-filename">cfg_014_rig.pck</code>)
+                    </button>
+                    <button type="button" id="btn-demo-download-bundle" class="btn btn-secondary">
+                      ⬇ Download Manifest (<code id="demo-json-filename">cfg_014_rig.playable.bundle.json</code>)
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -134,7 +275,7 @@
                 <h3>Active Scene Contract</h3>
                 <p class="mono-path">res://scenes/zones/fire_prison_rig.tscn</p>
                 <ul class="contract-list">
-                  <li><span>Physics Engine</span> <strong>JoltPhysics3D (60Hz)</strong></li>
+                  <li><span>Physics Engine</span> <strong>JoltPhysics3D (60Hz Native)</strong></li>
                   <li><span>Draw Call Budget</span> <strong id="hud-draw-calls">112 / 180</strong></li>
                   <li><span>Active Quest</span> <strong>q_prison_break</strong></li>
                   <li><span>CoalVent_01 Charges</span> <strong id="hud-vent-charges">6 / 6</strong></li>
@@ -143,22 +284,22 @@
               </div>
 
               <div class="panel-box">
-                <h3>Quick In-Game Actions</h3>
+                <h3>Inspect Showcase Chapters &amp; QA</h3>
                 <div class="action-buttons-stack">
                   <button type="button" id="btn-extract-coal" class="btn btn-secondary btn-full">
-                    🛡️ Extract CoalVent_01 &amp; Form Metal Shield
+                    🛡️ Preview Ch 3: CoalVent_01 &amp; Metal Shield
                   </button>
                   <button type="button" id="btn-earth-lance" class="btn btn-primary btn-full">
-                    ⚡ Cast Tectonic Earth Lance (185 DMG)
+                    ⚡ Preview Ch 4: Cast Tectonic Earth Lance (185 DMG)
                   </button>
                   <button type="button" id="btn-run-bot-swarm" class="btn btn-secondary btn-full">
-                    🤖 Run 10x Speed Bot Swarm Check
+                    🤖 Run 10x Headless Bot Swarm QA Check
                   </button>
                 </div>
               </div>
 
               <div class="panel-box telemetry-box">
-                <h3>Live Telemetry Feed (<code>telemetry.jsonl</code>)</h3>
+                <h3>Headless QA &amp; Realm Telemetry (<code>telemetry.jsonl</code>)</h3>
                 <pre id="telemetry-log" class="telemetry-pre"></pre>
               </div>
             </aside>
@@ -176,7 +317,7 @@
               <p class="section-sub">
                 Describe a new feature, boss mechanic, or world modification. Our cloud build engine scopes,
                 generates procedural Godot 4.7 resources, runs automated 10x bot &amp; visual QA checks,
-                and deploys an isolated Preview Branch Server in seconds.
+                and compiles a downloadable <code>.pck</code> cartridge for the Native Godot Client.
               </p>
             </div>
             <div class="ledger-pill-box" id="ledger-summary">
@@ -236,7 +377,7 @@
                 </div>
                 <div class="demo-toolbar">
                   <button type="button" id="btn-mount-bundle" class="btn btn-primary">
-                    ▶ Mount .pck &amp; Hot-Reload in Godot 4 Engine
+                    ▶ Stage .pck in Showcase &amp; Native CLI
                   </button>
                   <button type="button" id="btn-download-pck" class="btn btn-secondary">
                     📦 Download Compiled .pck
@@ -286,13 +427,13 @@
           <div class="pricing-grid">
             <article class="price-card">
               <div class="tier-tag">Players &amp; Friends</div>
-              <h3>Universal Client</h3>
+              <h3>Universal Native Client</h3>
               <div class="price-val">£0 <span>forever</span></div>
-              <p>Download once on PC, Mac, Linux, Steam Deck, iOS, Android, or Console. Join any friend's 6-digit Room Code for free.</p>
+              <p>Download once on Windows, macOS, Linux, or Steam Deck. Join any friend's 6-digit Room Code for free.</p>
               <ul class="feature-list">
                 <li>✓ Instant 15–50 MB <code>.pck</code> streaming</li>
                 <li>✓ Strict AST &amp; C++ <code>--sandboxed-pck</code> security</li>
-                <li>✓ Cross-platform controller &amp; UI prompts</li>
+                <li>✓ Native Vulkan, D3D12 &amp; Metal 3 performance</li>
               </ul>
             </article>
 
@@ -358,7 +499,7 @@
           <strong>playable.gg</strong> — Open-Core AI-Native Multi-Tenant 3D Game Studio (Godot 4.7+ / JoltPhysics3D)
         </div>
         <div class="footer-links">
-          <span>MIT Client &amp; Cartridges</span>
+          <span>MIT Native Client &amp; Cartridges</span>
           <span>•</span>
           <span>Cloudflare R2 <code>.pck</code> Streaming</span>
           <span>•</span>
