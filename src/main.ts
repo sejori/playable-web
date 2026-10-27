@@ -842,38 +842,46 @@ async function initApp(): Promise<void> {
   let latestRoomCode = 'TEST-4821';
   let activeChapter: ShowcaseChapter = 'arena';
 
+  const formatTelemetryEntry = (entry: Record<string, unknown>): string => {
+    const time = new Date().toLocaleTimeString();
+    if (entry.event === 'SCENE_MOUNTED') {
+      return `[${time}] 🟢 SCENE_MOUNTED: ${entry.scene} (Vulkan 60Hz Jolt3D)`;
+    }
+    if (entry.event === 'COMBAT_SUMMARY') {
+      return `[${time}] 🏆 COMBAT: ${entry.outcome} (${entry.bot_id}, ${entry.dps_dealt} DPS, 0 stuck)`;
+    }
+    if (entry.event === 'SHOWCASE_CHAPTER_SELECTED') {
+      return `[${time}] 🎬 CHAPTER: ${entry.chapter} (Zone: ${latestBundle.zone_title})`;
+    }
+    if (entry.event === 'QUAD_QA_TELEMETRY_TOGGLED') {
+      return `[${time}] 🔍 QA_VISION: mode=${entry.mode} (Broadphase Jolt: PASS)`;
+    }
+    if (entry.event === 'SHOWCASE_PREVIEW_COAL_VENT_SHIELD') {
+      return `[${time}] 🛡️ SHIELD: CoalVent_01 extracted (+65% mitigation)`;
+    }
+    if (entry.event === 'SHOWCASE_PREVIEW_EARTH_LANCE') {
+      return `[${time}] ⚡ SPELL: Cast Tectonic Earth Lance (${entry.damage} DMG)`;
+    }
+    if (entry.event === 'BOT_SWARM_QA_STARTED') {
+      return `[${time}] 🤖 BOT_SWARM: 10x simulation (1,800 ticks, 0 nav errors)`;
+    }
+    return `[${time}] ℹ️ ${entry.event}: ${JSON.stringify(entry)}`;
+  };
+
   const telemetryLines: string[] = [
-    JSON.stringify({
-      ts: 1792698012,
-      tick: 120,
-      runtime: 'Godot-4.7.2-Native-Vulkan',
-      branch: 'feat/prison-rig',
-      event: 'SCENE_MOUNTED',
-      scene: 'res://scenes/zones/fire_prison_rig.tscn',
-    }),
-    JSON.stringify({
-      ts: 1792698045,
-      tick: 1420,
-      bot_id: 'QA_Bot_04',
-      event: 'COMBAT_SUMMARY',
-      outcome: 'WIN',
-      dps_dealt: 64.1,
-    }),
+    formatTelemetryEntry({ event: 'SCENE_MOUNTED', scene: 'res://scenes/zones/fire_prison_rig.tscn' }),
+    formatTelemetryEntry({ event: 'COMBAT_SUMMARY', outcome: 'WIN', bot_id: 'QA_Bot_04', dps_dealt: 101.9 }),
   ];
-  telemetryPre.textContent = telemetryLines.join('\n\n');
+  telemetryPre.textContent = telemetryLines.join('\n');
 
   const appendTelemetry = (entry: Record<string, unknown>): void => {
-    telemetryLines.unshift(JSON.stringify({ ts: Math.floor(Date.now() / 1000), ...entry }));
-    if (telemetryLines.length > 8) telemetryLines.pop();
-    telemetryPre.textContent = telemetryLines.join('\n\n');
+    telemetryLines.unshift(formatTelemetryEntry(entry));
+    if (telemetryLines.length > 6) telemetryLines.pop();
+    telemetryPre.textContent = telemetryLines.join('\n');
   };
 
   if (videoEl && SHOWCASE_VIDEO_CDN_URL) {
     videoEl.src = SHOWCASE_VIDEO_CDN_URL;
-    if (svgStreamEl) {
-      svgStreamEl.style.pointerEvents = 'none';
-      svgStreamEl.style.opacity = '0';
-    }
   }
 
   const renderShowcaseChapter = (chapter: ShowcaseChapter): void => {
@@ -884,15 +892,23 @@ async function initApp(): Promise<void> {
       btn.setAttribute('aria-selected', isMatch ? 'true' : 'false');
     });
 
-    if (videoEl) {
-      videoEl.poster =
-        chapter === 'quad-qa'
-          ? '/showcase/quad-qa-telemetry-poster.svg'
-          : '/showcase/arena-gameplay-poster.svg';
-    }
-
-    if (svgStreamEl) {
-      svgStreamEl.innerHTML = buildShowcaseSvgMarkup(chapter, latestBundle, latestRoomCode);
+    if (chapter === 'quad-qa') {
+      // Show 4-Quadrant diagnostic telemetry view
+      if (videoEl) videoEl.style.display = 'none';
+      if (svgStreamEl) {
+        svgStreamEl.style.display = 'block';
+        svgStreamEl.innerHTML = buildShowcaseSvgMarkup('quad-qa', latestBundle, latestRoomCode);
+      }
+    } else {
+      // Show real video gameplay capture
+      if (videoEl) {
+        videoEl.style.display = 'block';
+        videoEl.poster = './showcase/arena-poster.jpg';
+        videoEl.play().catch(() => {});
+      }
+      if (svgStreamEl) {
+        svgStreamEl.style.display = 'none';
+      }
     }
 
     const chapterTitles: Record<ShowcaseChapter, string> = {

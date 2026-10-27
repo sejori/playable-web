@@ -180,7 +180,10 @@ test.describe('playable-web UI & Auth Suite', () => {
     const showcaseContainer = page.locator('.video-showcase-container');
     await expect(showcaseContainer).toBeVisible();
     await expect(page.locator('.video-overlay-badge')).toBeVisible();
-    await expect(page.locator('#demo-showcase-video')).toBeVisible();
+    const video = page.locator('#demo-showcase-video');
+    await expect(video).toBeVisible();
+    await expect(video.locator('source[type="video/webm"]')).toHaveAttribute('src', './showcase/arena-showcase.webm');
+    await expect(video.locator('source[type="video/mp4"]')).toHaveAttribute('src', './showcase/arena-showcase.mp4');
   });
 
   test('Native client download CTAs for Windows, macOS, Linux and CLI command are available', async ({ page }) => {

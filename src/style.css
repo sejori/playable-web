@@ -467,6 +467,49 @@ h2 {
   width: 100%;
   height: 100%;
   pointer-events: none;
+  z-index: 5;
+}
+
+/* COLLAPSIBLE CONFIG BUNDLE */
+.config-bundle-details {
+  background: var(--bg-deep);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.65rem;
+  margin-top: 1.25rem;
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+}
+
+.config-bundle-details[open] {
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+.config-bundle-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.15rem;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--text-main);
+  background: var(--bg-elevated);
+}
+
+.config-bundle-summary:hover {
+  color: var(--accent-cyan);
+}
+
+.summary-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.config-bundle-body {
+  padding: 1rem 1.15rem;
+  border-top: 1px solid var(--border-subtle);
 }
 
 .showcase-floating-badge {
