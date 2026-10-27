@@ -3,14 +3,14 @@ import { test, expect } from '@playwright/test';
 test.describe('tokigen.gg Web Suite', () => {
   test('Landing page loads with tokigen branding and hero copy', async ({ page }) => {
     await page.goto('./');
-    await expect(page).toHaveTitle(/tokigen\.gg — Build the world, set the rules, bring your friends!/i);
+    await expect(page).toHaveTitle(/tokigen\.gg — Create a world. Write the rules. Bring your friends!/i);
 
     // Hero headline lines
     const heroTitle = page.locator('.hero-title');
     await expect(heroTitle).toBeVisible();
-    await expect(heroTitle).toContainText('Build the world,');
-    await expect(heroTitle).toContainText('set the rules,');
-    await expect(heroTitle).toContainText('bring your friends!');
+    await expect(heroTitle).toContainText('Create a world.');
+    await expect(heroTitle).toContainText('Write the rules.');
+    await expect(heroTitle).toContainText('Bring your friends!');
 
     // Hero lead text mentions creating, sharing and joining
     const heroLead = page.locator('.hero-lead');
@@ -21,6 +21,13 @@ test.describe('tokigen.gg Web Suite', () => {
     const heroHanko = page.locator('.hanko-hero');
     await expect(heroHanko).toBeVisible();
     await expect(heroHanko).toContainText('起源');
+  });
+
+  test('Showcase section appears before How it works in page flow', async ({ page }) => {
+    await page.goto('./');
+    const sections = page.locator('main > section');
+    const ids = await sections.evaluateAll((els) => els.map((el) => el.id));
+    expect(ids).toEqual(['top', 'showcase', 'how', 'download']);
   });
 
   test('Hero CTA "Get Started Now" targets download section', async ({ page }) => {
@@ -120,21 +127,21 @@ test.describe('tokigen.gg Web Suite', () => {
     // Switch to Japanese
     await langSelect.selectOption('ja');
     await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
-    await expect(page).toHaveTitle(/tokigen\.gg — 世界を創り、ルールを決め、仲間を呼ぼう！/i);
-    await expect(page.locator('.hero-title')).toContainText('世界を創り、');
+    await expect(page).toHaveTitle(/tokigen\.gg — 世界を創る。ルールを書く。仲間を呼ぼう！/i);
+    await expect(page.locator('.hero-title')).toContainText('世界を創る。');
     await expect(page.locator('#cta-get-started')).toHaveText('今すぐ始める');
 
     // Switch to Brazilian Portuguese
     await langSelect.selectOption('pt-BR');
     await expect(page.locator('html')).toHaveAttribute('lang', 'pt-BR');
-    await expect(page).toHaveTitle(/tokigen\.gg — Construa o mundo, defina as regras, traga seus amigos!/i);
-    await expect(page.locator('.hero-title')).toContainText('Construa o mundo,');
+    await expect(page).toHaveTitle(/tokigen\.gg — Crie um mundo. Escreva as regras. Traga seus amigos!/i);
+    await expect(page.locator('.hero-title')).toContainText('Crie um mundo.');
     await expect(page.locator('#cta-get-started')).toHaveText('Comece agora');
 
     // Switch back to English
     await langSelect.selectOption('en');
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-    await expect(page.locator('.hero-title')).toContainText('Build the world,');
+    await expect(page.locator('.hero-title')).toContainText('Create a world.');
     await expect(page.locator('#cta-get-started')).toHaveText('Get Started Now');
   });
 

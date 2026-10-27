@@ -17,16 +17,16 @@ const STORAGE_KEY = 'tokigen_lang';
 type Dict = Record<string, string>;
 
 const en: Dict = {
-  'meta.title.home': 'tokigen.gg — Build the world, set the rules, bring your friends!',
+  'meta.title.home': 'tokigen.gg — Create a world. Write the rules. Bring your friends!',
   'meta.title.studio': 'Web Studio (under construction) — tokigen.gg',
   'meta.description':
-    'The tokigen client is your home to create, share, and join living multiplayer games. Build the world, set the rules, bring your friends!',
+    'The tokigen client is your home to create, share, and join living multiplayer games. Create a world. Write the rules. Bring your friends!',
 
   'nav.skip': 'Skip to content',
   'nav.label': 'Primary',
   'nav.menu': 'Menu',
-  'nav.how': 'How it works',
   'nav.showcase': 'Showcase',
+  'nav.how': 'How it works',
   'nav.download': 'Download',
   'nav.studio': 'Web Studio',
   'nav.discord': 'Discord',
@@ -37,13 +37,13 @@ const en: Dict = {
   'brand.home': 'tokigen.gg home',
 
   'hero.eyebrow': 'AI-native multiplayer game creation',
-  'hero.line1': 'Build the world,',
-  'hero.line2': 'set the rules,',
-  'hero.line3': 'bring your friends!',
+  'hero.line1': 'Create a world.',
+  'hero.line2': 'Write the rules.',
+  'hero.line3': 'Bring your friends!',
   'hero.lead':
     'The tokigen client is your home to create custom games, share room codes, and jump into living multiplayer worlds with your friends.',
   'hero.cta': 'Get Started Now',
-  'hero.secondary': 'See how it works',
+  'hero.secondary': 'Watch showcase',
   'hero.stampLabel': 'Kigen — origin',
 
   'how.eyebrow': 'How it works',
@@ -108,7 +108,7 @@ const en: Dict = {
   'community.title': 'Join the community',
   'community.body': 'Share your games, find players and help shape tokigen.',
 
-  'footer.tagline': 'Build the world, set the rules, bring your friends!',
+  'footer.tagline': 'Create a world. Write the rules. Bring your friends!',
   'footer.credit': 'Built with Godot Engine and open source.',
 
   'studio.eyebrow': 'Web Studio',
@@ -127,16 +127,16 @@ const en: Dict = {
 };
 
 const ptBR: Dict = {
-  'meta.title.home': 'tokigen.gg — Construa o mundo, defina as regras, traga seus amigos!',
+  'meta.title.home': 'tokigen.gg — Crie um mundo. Escreva as regras. Traga seus amigos!',
   'meta.title.studio': 'Estúdio Web (em construção) — tokigen.gg',
   'meta.description':
-    'O cliente tokigen é o seu lugar para criar, compartilhar e jogar mundos multiplayer vivos. Construa o mundo, defina as regras, traga seus amigos!',
+    'O cliente tokigen é o seu lugar para criar, compartilhar e jogar mundos multiplayer vivos. Crie um mundo. Escreva as regras. Traga seus amigos!',
 
   'nav.skip': 'Pular para o conteúdo',
   'nav.label': 'Principal',
   'nav.menu': 'Menu',
-  'nav.how': 'Como funciona',
   'nav.showcase': 'Vitrine',
+  'nav.how': 'Como funciona',
   'nav.download': 'Baixar',
   'nav.studio': 'Estúdio Web',
   'nav.discord': 'Discord',
@@ -147,13 +147,13 @@ const ptBR: Dict = {
   'brand.home': 'Página inicial do tokigen.gg',
 
   'hero.eyebrow': 'Criação de jogos multiplayer com IA',
-  'hero.line1': 'Construa o mundo,',
-  'hero.line2': 'defina as regras,',
-  'hero.line3': 'traga seus amigos!',
+  'hero.line1': 'Crie um mundo.',
+  'hero.line2': 'Escreva as regras.',
+  'hero.line3': 'Traga seus amigos!',
   'hero.lead':
     'O cliente tokigen é o seu lugar para criar jogos personalizados, compartilhar códigos de sala e jogar mundos multiplayer vivos com seus amigos.',
   'hero.cta': 'Comece agora',
-  'hero.secondary': 'Veja como funciona',
+  'hero.secondary': 'Ver vitrine',
   'hero.stampLabel': 'Kigen — origem',
 
   'how.eyebrow': 'Como funciona',
@@ -218,7 +218,7 @@ const ptBR: Dict = {
   'community.title': 'Entre na comunidade',
   'community.body': 'Compartilhe seus jogos, encontre jogadores e ajude a moldar o tokigen.',
 
-  'footer.tagline': 'Construa o mundo, defina as regras, traga seus amigos!',
+  'footer.tagline': 'Crie um mundo. Escreva as regras. Traga seus amigos!',
   'footer.credit': 'Feito com Godot Engine e código aberto.',
 
   'studio.eyebrow': 'Estúdio Web',
@@ -237,16 +237,16 @@ const ptBR: Dict = {
 };
 
 const ja: Dict = {
-  'meta.title.home': 'tokigen.gg — 世界を創り、ルールを決め、仲間を呼ぼう！',
+  'meta.title.home': 'tokigen.gg — 世界を創る。ルールを書く。仲間を呼ぼう！',
   'meta.title.studio': 'Webスタジオ（工事中）— tokigen.gg',
   'meta.description':
-    'tokigenクライアントは、マルチプレイヤーゲームを創り、共有し、参加できるプラットフォームです。世界を創り、ルールを決め、仲間を呼ぼう！',
+    'tokigenクライアントは、マルチプレイヤーゲームを創り、共有し、参加できるプラットフォームです。世界を創る。ルールを書く。仲間を呼ぼう！',
 
   'nav.skip': '本文へスキップ',
   'nav.label': 'メインメニュー',
   'nav.menu': 'メニュー',
-  'nav.how': '仕組み',
   'nav.showcase': 'ショーケース',
+  'nav.how': '仕組み',
   'nav.download': 'ダウンロード',
   'nav.studio': 'Webスタジオ',
   'nav.discord': 'Discord',
@@ -257,13 +257,13 @@ const ja: Dict = {
   'brand.home': 'tokigen.gg ホーム',
 
   'hero.eyebrow': 'AIネイティブなマルチプレイヤーゲーム制作',
-  'hero.line1': '世界を創り、',
-  'hero.line2': 'ルールを決め、',
+  'hero.line1': '世界を創る。',
+  'hero.line2': 'ルールを書く。',
   'hero.line3': '仲間を呼ぼう！',
   'hero.lead':
     'tokigenクライアントは、AIと共に独自のゲームを創り、ルームコードで共有し、友達とマルチプレイヤーの世界へ飛び込めるオールインワン環境です。',
   'hero.cta': '今すぐ始める',
-  'hero.secondary': '仕組みを見る',
+  'hero.secondary': 'ショーケースを見る',
   'hero.stampLabel': '起源',
 
   'how.eyebrow': '仕組み',
@@ -326,7 +326,7 @@ const ja: Dict = {
   'community.title': 'コミュニティに参加',
   'community.body': 'ゲームを共有して、仲間を見つけて、tokigenを一緒に作ろう。',
 
-  'footer.tagline': '世界を創り、ルールを決め、仲間を呼ぼう！',
+  'footer.tagline': '世界を創る。ルールを書く。仲間を呼ぼう！',
   'footer.credit': 'Godot Engineとオープンソースで構築。',
 
   'studio.eyebrow': 'Webスタジオ',

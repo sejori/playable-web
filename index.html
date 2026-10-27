@@ -13,10 +13,10 @@
       } catch (e) {}
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>tokigen.gg — Build the world, set the rules, bring your friends!</title>
+    <title>tokigen.gg — Create a world. Write the rules. Bring your friends!</title>
     <meta
       name="description"
-      content="The tokigen client is your home to create, share, and join living multiplayer games. Build the world, set the rules, bring your friends!"
+      content="The tokigen client is your home to create, share, and join living multiplayer games. Create a world. Write the rules. Bring your friends!"
     />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fbfaf7" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0e1016" />
@@ -25,24 +25,24 @@
     <link rel="canonical" href="%VITE_SITE_URL%" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="tokigen.gg" />
-    <meta property="og:title" content="tokigen.gg — Build the world, set the rules, bring your friends!" />
+    <meta property="og:title" content="tokigen.gg — Create a world. Write the rules. Bring your friends!" />
     <meta
       property="og:description"
-      content="The tokigen client is your home to create, share, and join living multiplayer games. Build the world, set the rules, bring your friends!"
+      content="The tokigen client is your home to create, share, and join living multiplayer games. Create a world. Write the rules. Bring your friends!"
     />
     <meta property="og:url" content="%VITE_SITE_URL%" />
     <meta property="og:image" content="%VITE_SITE_URL%og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="tokigen.gg — Build the world, set the rules, bring your friends!" />
+    <meta property="og:image:alt" content="tokigen.gg — Create a world. Write the rules. Bring your friends!" />
     <meta property="og:locale" content="en_GB" />
     <meta property="og:locale:alternate" content="pt_BR" />
     <meta property="og:locale:alternate" content="ja_JP" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="tokigen.gg — Build the world, set the rules, bring your friends!" />
+    <meta name="twitter:title" content="tokigen.gg — Create a world. Write the rules. Bring your friends!" />
     <meta
       name="twitter:description"
-      content="The tokigen client is your home to create, share, and join living multiplayer games. Build the world, set the rules, bring your friends!"
+      content="The tokigen client is your home to create, share, and join living multiplayer games. Create a world. Write the rules. Bring your friends!"
     />
     <meta name="twitter:image" content="%VITE_SITE_URL%og-image.png" />
 
@@ -71,8 +71,8 @@
         </button>
 
         <nav id="site-menu" class="site-nav" popover data-i18n-attr="aria-label:nav.label" aria-label="Primary">
-          <a href="#how" data-i18n="nav.how">How it works</a>
           <a href="#showcase" data-i18n="nav.showcase">Showcase</a>
+          <a href="#how" data-i18n="nav.how">How it works</a>
           <a href="#download" data-i18n="nav.download">Download</a>
           <a href="./studio.html" id="nav-studio" data-i18n="nav.studio">Web Studio</a>
           <span class="discord-link is-soon" aria-disabled="true">
@@ -114,19 +114,76 @@
         <div class="container hero-inner">
           <p class="eyebrow" data-i18n="hero.eyebrow">AI-native multiplayer game creation</p>
           <h1 class="brush-title hero-title">
-            <span class="hero-line" data-i18n="hero.line1">Build the world,</span>
-            <span class="hero-line hero-line-red" data-i18n="hero.line2">set the rules,</span>
-            <span class="hero-line hero-line-blue" data-i18n="hero.line3">bring your friends!</span>
+            <span class="hero-line" data-i18n="hero.line1">Create a world.</span>
+            <span class="hero-line hero-line-red" data-i18n="hero.line2">Write the rules.</span>
+            <span class="hero-line hero-line-blue" data-i18n="hero.line3">Bring your friends!</span>
           </h1>
           <p class="hero-lead" data-i18n="hero.lead">
             The tokigen client is your home to create custom games, share room codes, and jump into living multiplayer worlds with your friends.
           </p>
           <div class="hero-actions">
             <a href="#download" id="cta-get-started" class="btn btn-cta btn-lg" data-i18n="hero.cta">Get Started Now</a>
-            <a href="#how" class="btn btn-ghost btn-lg" data-i18n="hero.secondary">See how it works</a>
+            <a href="#showcase" class="btn btn-ghost btn-lg" data-i18n="hero.secondary">Watch showcase</a>
           </div>
           <div class="hanko hanko-hero" role="img" data-i18n-attr="aria-label:hero.stampLabel" aria-label="Kigen — origin">
             <span aria-hidden="true">起源</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SHOWCASE -->
+      <section id="showcase" class="section showcase-section">
+        <div class="container">
+          <header class="section-header">
+            <p class="eyebrow" data-i18n="showcase.eyebrow">Showcase</p>
+            <h2 class="brush-title" data-i18n="showcase.title">One prompt. One playable world.</h2>
+            <p class="section-sub" data-i18n="showcase.sub">
+              Our Fire Rig demo started life as this prompt. The video is recorded straight from the tokigen launcher.
+            </p>
+          </header>
+
+          <div class="showcase-grid">
+            <figure class="card prompt-card reveal">
+              <figcaption class="prompt-head">
+                <span class="prompt-avatar" aria-hidden="true">君</span>
+                <span data-i18n="showcase.promptLabel">Your prompt</span>
+              </figcaption>
+              <blockquote class="prompt-bubble">
+                <p id="showcase-prompt" class="prompt-text" data-i18n="showcase.prompt">
+                  Build a prison break on a boiling iron rig out at sea. I want to bend metal from the coal vents into a
+                  shield, then take down the Fire Warden boss with my friends.
+                </p>
+                <p class="prompt-typed" aria-hidden="true"></p>
+              </blockquote>
+              <ol class="pipeline">
+                <li data-i18n="showcase.step1">Designed</li>
+                <li data-i18n="showcase.step2">World built</li>
+                <li data-i18n="showcase.step3">Bot-tested</li>
+                <li data-i18n="showcase.step4">Ready to play</li>
+              </ol>
+            </figure>
+
+            <figure class="video-card reveal">
+              <div class="video-frame video-showcase-container">
+                <video
+                  id="demo-showcase-video"
+                  class="showcase-video"
+                  controls
+                  muted
+                  loop
+                  playsinline
+                  preload="metadata"
+                  poster="./showcase/arena-poster.jpg"
+                  data-i18n-attr="aria-label:showcase.videoLabel"
+                  aria-label="Gameplay recorded in the tokigen launcher"
+                >
+                  <source src="./showcase/arena-showcase.webm" type="video/webm" />
+                  <source src="./showcase/arena-showcase.mp4" type="video/mp4" />
+                </video>
+                <span class="video-badge"><span class="rec-dot" aria-hidden="true"></span>REC</span>
+              </div>
+              <figcaption class="video-caption" data-i18n="showcase.resultLabel">Result: The Boiling Iron Rig</figcaption>
+            </figure>
           </div>
         </div>
       </section>
@@ -242,63 +299,6 @@
         </div>
       </section>
 
-      <!-- SHOWCASE -->
-      <section id="showcase" class="section showcase-section">
-        <div class="container">
-          <header class="section-header">
-            <p class="eyebrow" data-i18n="showcase.eyebrow">Showcase</p>
-            <h2 class="brush-title" data-i18n="showcase.title">One prompt. One playable world.</h2>
-            <p class="section-sub" data-i18n="showcase.sub">
-              Our Fire Rig demo started life as this prompt. The video is recorded straight from the tokigen launcher.
-            </p>
-          </header>
-
-          <div class="showcase-grid">
-            <figure class="card prompt-card reveal">
-              <figcaption class="prompt-head">
-                <span class="prompt-avatar" aria-hidden="true">君</span>
-                <span data-i18n="showcase.promptLabel">Your prompt</span>
-              </figcaption>
-              <blockquote class="prompt-bubble">
-                <p id="showcase-prompt" class="prompt-text" data-i18n="showcase.prompt">
-                  Build a prison break on a boiling iron rig out at sea. I want to bend metal from the coal vents into a
-                  shield, then take down the Fire Warden boss with my friends.
-                </p>
-                <p class="prompt-typed" aria-hidden="true"></p>
-              </blockquote>
-              <ol class="pipeline">
-                <li data-i18n="showcase.step1">Designed</li>
-                <li data-i18n="showcase.step2">World built</li>
-                <li data-i18n="showcase.step3">Bot-tested</li>
-                <li data-i18n="showcase.step4">Ready to play</li>
-              </ol>
-            </figure>
-
-            <figure class="video-card reveal">
-              <div class="video-frame video-showcase-container">
-                <video
-                  id="demo-showcase-video"
-                  class="showcase-video"
-                  controls
-                  muted
-                  loop
-                  playsinline
-                  preload="metadata"
-                  poster="./showcase/arena-poster.jpg"
-                  data-i18n-attr="aria-label:showcase.videoLabel"
-                  aria-label="Gameplay recorded in the tokigen launcher"
-                >
-                  <source src="./showcase/arena-showcase.webm" type="video/webm" />
-                  <source src="./showcase/arena-showcase.mp4" type="video/mp4" />
-                </video>
-                <span class="video-badge"><span class="rec-dot" aria-hidden="true"></span>REC</span>
-              </div>
-              <figcaption class="video-caption" data-i18n="showcase.resultLabel">Result: The Boiling Iron Rig</figcaption>
-            </figure>
-          </div>
-        </div>
-      </section>
-
       <!-- DOWNLOAD -->
       <section id="download" class="section download-section">
         <div class="container">
@@ -375,12 +375,12 @@
           <span class="hanko hanko-sm" aria-hidden="true"><span>起源</span></span>
           <div>
             <span class="wordmark">tokigen<span class="wordmark-tld">.gg</span></span>
-            <p data-i18n="footer.tagline">Build the world, set the rules, bring your friends!</p>
+            <p data-i18n="footer.tagline">Create a world. Write the rules. Bring your friends!</p>
           </div>
         </div>
         <nav class="footer-links" aria-label="Footer">
-          <a href="#how" data-i18n="nav.how">How it works</a>
           <a href="#showcase" data-i18n="nav.showcase">Showcase</a>
+          <a href="#how" data-i18n="nav.how">How it works</a>
           <a href="#download" data-i18n="nav.download">Download</a>
           <a href="./studio.html" data-i18n="nav.studio">Web Studio</a>
         </nav>
