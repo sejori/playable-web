@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <!-- Ensō (zen brush circle). Used as a CSS mask so it can be recoloured. -->
+  <defs>
+    <filter id="brush" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9 0.05" numOctaves="2" seed="3" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="14" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  <g filter="url(#brush)" fill="none" stroke="#000" stroke-linecap="round">
+    <circle cx="200" cy="200" r="150" stroke-width="34" stroke-dasharray="850 1000" transform="rotate(-70 200 200)"/>
+    <circle cx="200" cy="200" r="138" stroke-width="10" stroke-dasharray="700 1000" opacity="0.6" transform="rotate(-60 200 200)"/>
+    <circle cx="200" cy="200" r="163" stroke-width="6" stroke-dasharray="520 1100" opacity="0.5" transform="rotate(-40 200 200)"/>
+  </g>
+</svg>

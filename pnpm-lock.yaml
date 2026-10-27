@@ -4,6 +4,20 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+dependencies:
+  '@fontsource-variable/inter':
+    specifier: ^5.3.0
+    version: 5.3.0
+  '@fontsource-variable/noto-sans-jp':
+    specifier: ^5.3.1
+    version: 5.3.1
+  '@fontsource/knewave':
+    specifier: ^5.3.0
+    version: 5.3.0
+  '@fontsource/yuji-boku':
+    specifier: ^5.3.1
+    version: 5.3.1
+
 devDependencies:
   '@playwright/test':
     specifier: ^1.64.1
@@ -223,6 +237,22 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /@fontsource-variable/inter@5.3.0:
+    resolution: {integrity: sha512-OupL48va4JNofb97w6NYeF9S7W/kHNKM0Er8Dem5nqi4jeOLrVJDoE8tZEpnMJmtkvNbB1EIPPwHcdkF6b1oUA==}
+    dev: false
+
+  /@fontsource-variable/noto-sans-jp@5.3.1:
+    resolution: {integrity: sha512-/anGvJFc5y36f8DJ+3TSh2+KAvaRLA9PaLUMvneeY5s4j8m+8X4F3lE/sjTuG9YI5BX4sykvCk4TuJMG7ecMRQ==}
+    dev: false
+
+  /@fontsource/knewave@5.3.0:
+    resolution: {integrity: sha512-Ftlumu01eE3sgzn/gPOC/FFlYVA8uud93Bpl1Ilr72EjSWLdWUTkGHeB7ivOpAXatrdmnT/qkorEwAzm7hqXpQ==}
+    dev: false
+
+  /@fontsource/yuji-boku@5.3.1:
+    resolution: {integrity: sha512-DXdrE3jQrQ46Q45C14pFP9fay/yMHtg1E+C0SLT2XrcqJtnrRterdvqrqZ+gXHFc5Gns/mCO0kFmrWW+lI9eWg==}
+    dev: false
 
   /@napi-rs/lzma-linux-x64-gnu@1.5.1:
     resolution: {integrity: sha512-oTXEIha4SsuXdTA4Iyskj0kpdx2yVXdhd75c2v3xGrHFfVMsbhTPZU/nMPL4sWKo4pBHm3aucLaqGlF696dTyQ==}

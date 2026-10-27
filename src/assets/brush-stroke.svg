@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 64" preserveAspectRatio="none">
+  <!-- Dry-brush horizontal stroke. Used as a CSS mask so it can be recoloured. -->
+  <defs>
+    <filter id="rough" x="-5%" y="-40%" width="110%" height="180%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035 0.6" numOctaves="3" seed="7" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="9" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  <g filter="url(#rough)" fill="#000">
+    <path d="M10 36 C 60 20, 170 15, 300 17 C 420 19, 520 21, 590 27 C 560 34, 520 38, 470 40 C 360 46, 220 48, 120 46 C 70 45, 30 44, 10 36 Z"/>
+    <path d="M40 30 C 150 22, 330 21, 560 25 L 562 28 C 330 25, 150 27, 42 33 Z" opacity="0.9"/>
+    <path d="M470 41 C 520 40, 560 38, 596 33 L 598 35 C 560 41, 520 44, 470 44 Z" opacity="0.7"/>
+    <path d="M500 22 C 540 23, 570 24, 598 27 L 597 29 C 570 27, 540 26, 500 25 Z" opacity="0.6"/>
+    <path d="M30 44 C 90 49, 200 51, 330 50 L 330 52 C 200 54, 90 52, 30 46 Z" opacity="0.55"/>
+  </g>
+</svg>
