@@ -38,7 +38,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build playable-web
+      - name: Run Playwright E2E Tests
+        run: |
+          pnpm exec playwright install --with-deps chromium
+          pnpm exec playwright test
+        env:
+          CI: true
+
+      - name: Build Web Application
         run: pnpm run build
         env:
           VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || 'https://playable-server-yy32pk5s3q-nw.a.run.app' }}

@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>playable.gg — Open-Core AI-Native 3D Game Studio &amp; Cross-Platform Realm Host</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
@@ -22,6 +23,25 @@
         </nav>
         <div class="header-actions">
           <span id="server-status-pill" class="status-pill status-online">Native Engine Ready</span>
+
+          <!-- Auth Controls: Unauthenticated -->
+          <div id="auth-unauthenticated" class="auth-group">
+            <div id="g-id-signin" class="google-signin-wrapper"></div>
+            <button type="button" id="btn-guest-login" class="btn btn-secondary btn-sm auth-guest-btn" title="Zero-friction instant creator access">
+              ⚡ Instant Creator Demo
+            </button>
+          </div>
+
+          <!-- Auth Controls: Authenticated -->
+          <div id="auth-authenticated" class="auth-group" style="display: none;">
+            <div class="user-pill">
+              <span id="user-avatar" class="user-avatar-badge">CP</span>
+              <span id="user-email" class="user-email-text">creator@playable.gg</span>
+            </div>
+            <span id="nav-credits-badge" class="credits-badge">🪙 150 Credits</span>
+            <button type="button" id="btn-sign-out" class="btn btn-secondary btn-sm">Sign Out</button>
+          </div>
+
           <button type="button" id="btn-open-launcher" class="btn btn-secondary">Download Launcher (£0)</button>
           <a href="#creator-studio" class="btn btn-primary">Build a Realm</a>
         </div>
@@ -159,10 +179,10 @@
                 </div>
 
                 <!-- Native Engine Video Showcase Player -->
-                <div class="video-viewport-container">
+                <div class="video-showcase-container video-viewport-container">
                   <video
                     id="demo-showcase-video"
-                    class="showcase-video-el"
+                    class="showcase-video showcase-video-el"
                     controls
                     autoplay
                     muted
@@ -170,15 +190,18 @@
                     playsinline
                     poster="/showcase/arena-gameplay-poster.svg"
                     aria-label="Godot 4.7 Native Engine Video Showcase"
-                  ></video>
+                  >
+                    <source src="/showcase/arena-showcase.webm" type="video/webm">
+                    <source src="/showcase/arena-showcase.mp4" type="video/mp4">
+                  </video>
 
                   <!-- Live-Parameterized Animated SVG Stream Overlay (Active when no external CDN video stream is loaded) -->
                   <div id="showcase-svg-stream" class="showcase-svg-overlay" aria-hidden="true"></div>
 
-                  <div class="showcase-floating-badge">
+                  <div class="video-overlay-badge showcase-floating-badge">
                     <span class="rec-dot"></span>
                     <span id="showcase-chapter-label">
-                      RECORDED NATIVE VULKAN CAPTURE • 3rd-Person Arena Gameplay (120 FPS / Jolt 60Hz)
+                      Recorded Live from Godot 4.7.2 + JoltPhysics3D
                     </span>
                   </div>
                 </div>
@@ -253,7 +276,7 @@
                 <div class="cli-bundle-bar">
                   <div class="cli-command-box">
                     <span class="cli-label">CLI Launch Command:</span>
-                    <code id="cli-launch-command">playable-client --realm=TEST-4821 --pck=cfg_014_rig.pck --sandboxed-pck</code>
+                    <code id="cli-launch-command">playable-client --server=wss://playable-server-yy32pk5s3q-nw.a.run.app/ws</code>
                     <button type="button" id="btn-copy-cli" class="btn btn-secondary btn-sm">
                       📋 Copy CLI Command
                     </button>
@@ -343,10 +366,10 @@
                   type="text"
                   required
                   value="Add a molten geyser hazard ring around the Warden boss arena and boost Metal Shield mitigation"
-                  placeholder="Describe what to build or modify in your 3D realm..."
+                  placeholder="Describe your realm to build or modify in 3D..."
                 />
                 <button type="submit" id="btn-submit-build" class="btn btn-primary">
-                  Run Build Pipeline (3 Credits)
+                  ⚡ Build Realm (3 Credits)
                 </button>
               </div>
               <div class="preset-prompts">
@@ -478,6 +501,32 @@
         </div>
       </section>
     </main>
+
+    <!-- AUTHENTICATION REQUIRED MODAL -->
+    <dialog id="auth-modal" closedby="any" aria-labelledby="auth-modal-title" class="site-dialog">
+      <form method="dialog" class="dialog-content">
+        <div class="dialog-header">
+          <h2 id="auth-modal-title">Sign in with Google to build</h2>
+          <button type="submit" class="btn-close" aria-label="Close modal">✕</button>
+        </div>
+        <div class="dialog-body">
+          <p>
+            To protect cloud inference quota and compile persistent <code>.pck</code> cartridges,
+            please authenticate with your Google account or continue as an instant guest creator.
+          </p>
+          <div class="auth-modal-actions">
+            <div id="modal-g-id-signin" class="google-modal-btn"></div>
+            <div class="auth-divider"><span>OR</span></div>
+            <button type="button" id="btn-modal-guest-login" class="btn btn-accent btn-full">
+              ⚡ Continue with Instant Creator Demo (150 Free Credits)
+            </button>
+          </div>
+        </div>
+        <div class="dialog-footer">
+          <button type="submit" class="btn btn-secondary">Cancel</button>
+        </div>
+      </form>
+    </dialog>
 
     <!-- NATIVE MODAL DIALOG (following modern-web-guidance light-dismiss-a-dialog) -->
     <dialog id="info-dialog" closedby="any" aria-labelledby="dialog-title" class="site-dialog">

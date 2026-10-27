@@ -1047,3 +1047,119 @@ dialog.site-dialog::backdrop {
   border-color: #ef4444;
   color: #fecaca;
 }
+
+
+/* ---------------------------------------------------- */
+/* Authentication UI, User Pills & Credit Badges        */
+/* ---------------------------------------------------- */
+.auth-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.google-signin-wrapper {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+}
+
+.auth-guest-btn {
+  background: rgba(249, 115, 22, 0.12);
+  color: var(--accent-primary);
+  border-color: rgba(249, 115, 22, 0.35);
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.auth-guest-btn:hover {
+  background: rgba(249, 115, 22, 0.24);
+  border-color: var(--accent-primary);
+}
+
+.user-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.8rem;
+}
+
+.user-avatar-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  overflow: hidden;
+}
+
+.user-avatar-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-email-text {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-muted);
+}
+
+.credits-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  color: #fde68a;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+}
+
+.auth-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 1.25rem 0 0.5rem 0;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.auth-divider span {
+  padding: 0 0.75rem;
+}
+
+.google-modal-btn {
+  display: flex;
+  justify-content: center;
+  min-height: 44px;
+}

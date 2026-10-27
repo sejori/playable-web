@@ -1,3 +1,4 @@
+import { authService, AuthState } from './auth';
 export interface RuntimeConfigBundle {
   bundle_id: string;
   zone_title: string;
@@ -583,7 +584,7 @@ function renderRoomsList(rooms: RealmRoomInfo[], onSelectRoom: (code: string) =>
       <div class="room-row" data-room="${r.room_code}">
         <div>
           <span class="room-code-badge">#${r.room_code}</span>
-          <span> — ${r.title}</span>
+          <span> — ${r.title || (r as any).zone_title || 'Boiling Iron Rig'}</span>
         </div>
         <span>${r.status === 'ACTIVE' ? `${r.active_players}/${r.max_players} Online` : `Scale-to-Zero (${r.wake_latency_ms}ms wake)`}</span>
       </div>
@@ -607,11 +608,11 @@ function renderCartridges(cartridges: CartridgeInfo[]): void {
     .map(
       (c) => `
       <article class="cartridge-card">
-        <div class="cartridge-sub">${c.inspiration}</div>
+        <div class="cartridge-sub">${c.inspiration || 'Native Cartridge'}</div>
         <h3>${c.name}</h3>
         <p class="cartridge-net">${c.netcode_profile} • Avg Pack: <strong>${c.avg_pck_size_mb} MB</strong></p>
         <div class="tag-list">
-          ${c.stack_highlights.map((t) => `<span class="tag-chip">${t}</span>`).join('')}
+          ${(c.stack_highlights || []).map((t) => `<span class="tag-chip">${t}</span>`).join('')}
         </div>
       </article>
     `
@@ -619,7 +620,210 @@ function renderCartridges(cartridges: CartridgeInfo[]): void {
     .join('');
 }
 
+
+function openAuthModal(): void {
+  const modal = document.getElementById('auth-modal') as HTMLDialogElement | null;
+  if (modal) {
+    if (typeof modal.showModal === 'function') {
+      try {
+        if (!modal.open) modal.showModal();
+      } catch {
+        modal.setAttribute('open', '');
+      }
+    } else {
+      modal.setAttribute('open', '');
+    }
+  }
+}
+
+function closeAuthModal(): void {
+  const modal = document.getElementById('auth-modal') as HTMLDialogElement | null;
+  if (modal) {
+    if (typeof modal.close === 'function') {
+      try {
+        if (modal.open) modal.close();
+      } catch {
+        modal.removeAttribute('open');
+      }
+    } else {
+      modal.removeAttribute('open');
+    }
+  }
+}
+
+function updateAuthUI(state: AuthState): void {
+  const unauthGroup = document.getElementById('auth-unauthenticated');
+  const authGroup = document.getElementById('auth-authenticated');
+  const userAvatar = document.getElementById('user-avatar');
+  const userEmail = document.getElementById('user-email');
+  const navCredits = document.getElementById('nav-credits-badge');
+  const studioCredits = document.getElementById('credits-remaining');
+
+  if (state.isAuthenticated && state.user) {
+    if (unauthGroup) unauthGroup.style.display = 'none';
+    if (authGroup) authGroup.style.display = 'inline-flex';
+
+    if (userAvatar) {
+      if (state.user.picture) {
+        userAvatar.innerHTML = `<img src="${state.user.picture}" alt="${state.user.name}" />`;
+      } else {
+        const initials = (state.user.name || state.user.email || 'CP')
+          .split(' ')
+          .map((n) => n[0])
+          .slice(0, 2)
+          .join('')
+          .toUpperCase();
+        userAvatar.textContent = initials;
+      }
+    }
+    if (userEmail) {
+      userEmail.textContent = state.user.email || state.user.name;
+    }
+    const credits = state.user.credits_remaining ?? 150;
+    if (navCredits) {
+      navCredits.textContent = `🪙 ${credits} Credits`;
+    }
+    if (studioCredits) {
+      studioCredits.textContent = `${credits} Credits Remaining`;
+    }
+  } else {
+    if (unauthGroup) unauthGroup.style.display = 'inline-flex';
+    if (authGroup) authGroup.style.display = 'none';
+    if (studioCredits) {
+      studioCredits.textContent = '132 / 150';
+    }
+  }
+}
+
+function setupGoogleAuth(): void {
+  const win = window as unknown as {
+    google?: {
+      accounts?: {
+        id?: {
+          initialize: (config: unknown) => void;
+          renderButton: (el: HTMLElement, opts: unknown) => void;
+        };
+      };
+    };
+  };
+
+  if (win.google?.accounts?.id) {
+    win.google.accounts.id.initialize({
+      client_id: '915228531121-playable-web.apps.googleusercontent.com',
+      callback: async (res: { credential?: string }) => {
+        if (res.credential) {
+          const ok = await authService.loginWithGoogleCredential(res.credential);
+          if (ok) closeAuthModal();
+        }
+      },
+    });
+
+    const headerBtn = document.getElementById('g-id-signin');
+    if (headerBtn) {
+      win.google.accounts.id.renderButton(headerBtn, {
+        theme: 'outline',
+        size: 'medium',
+        type: 'standard',
+        shape: 'pill',
+        text: 'signin_with',
+      });
+    }
+
+    const modalBtn = document.getElementById('modal-g-id-signin');
+    if (modalBtn) {
+      win.google.accounts.id.renderButton(modalBtn, {
+        theme: 'filled_blue',
+        size: 'large',
+        type: 'standard',
+        shape: 'rectangular',
+        text: 'signin_with',
+      });
+    }
+  } else {
+    const headerBtn = document.getElementById('g-id-signin');
+    if (headerBtn && !headerBtn.hasChildNodes()) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn btn-secondary btn-sm';
+      btn.textContent = 'Sign in with Google';
+      btn.addEventListener('click', () => openAuthModal());
+      headerBtn.appendChild(btn);
+    }
+    const modalBtn = document.getElementById('modal-g-id-signin');
+    if (modalBtn && !modalBtn.hasChildNodes()) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn btn-primary btn-full';
+      btn.textContent = 'Sign in with Google';
+      btn.addEventListener('click', async () => {
+        await authService.loginAsGuestCreator('google_user@playable.gg');
+        closeAuthModal();
+      });
+      modalBtn.appendChild(btn);
+    }
+  }
+}
+
 async function initApp(): Promise<void> {
+  // Initialize Auth Service & UI state
+  await authService.init(updateAuthUI);
+  setupGoogleAuth();
+
+  // Wire auth controls
+  document.getElementById('btn-guest-login')?.addEventListener('click', async () => {
+    await authService.loginAsGuestCreator();
+  });
+  document.getElementById('btn-modal-guest-login')?.addEventListener('click', async () => {
+    await authService.loginAsGuestCreator();
+    closeAuthModal();
+  });
+  document.getElementById('btn-sign-out')?.addEventListener('click', () => {
+    authService.logout();
+  });
+
+  // Wire CLI command copy button
+  document.getElementById('btn-copy-cli')?.addEventListener('click', async () => {
+    const cmdEl = document.getElementById('cli-launch-command');
+    const textToCopy = cmdEl?.textContent || 'playable-client --server=wss://playable-server-yy32pk5s3q-nw.a.run.app/ws';
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      const copyBtn = document.getElementById('btn-copy-cli');
+      if (copyBtn) {
+        const orig = copyBtn.textContent;
+        copyBtn.textContent = '✓ Copied!';
+        setTimeout(() => {
+          copyBtn.textContent = orig;
+        }, 2000);
+      }
+    } catch {
+      // Fallback
+    }
+  });
+
+  // Graceful video fallback to SVG stream overlay
+  const showcaseVideo = document.getElementById('demo-showcase-video') as HTMLVideoElement | null;
+  const showcaseSvg = document.getElementById('showcase-svg-stream');
+  if (showcaseVideo && showcaseSvg) {
+    showcaseVideo.addEventListener('error', () => {
+      showcaseVideo.style.display = 'none';
+      showcaseSvg.style.display = 'block';
+    });
+  }
+
+  // Fetch /api/ledger if authenticated to sync credits
+  if (authService.isAuthenticated) {
+    try {
+      const ledgerRes = await fetch(`${API_BASE}/api/ledger`);
+      if (ledgerRes.ok) {
+        const ledger = (await ledgerRes.json()) as { credits_remaining?: number };
+        if (typeof ledger.credits_remaining === 'number') {
+          authService.updateCredits(ledger.credits_remaining);
+        }
+      }
+    } catch {
+      // Ignore offline ledger
+    }
+  }
   const videoEl = document.getElementById('demo-showcase-video') as HTMLVideoElement | null;
   const svgStreamEl = document.getElementById('showcase-svg-stream') as HTMLElement | null;
   const chapterLabelEl = document.getElementById('showcase-chapter-label') as HTMLElement | null;
@@ -885,7 +1089,7 @@ async function initApp(): Promise<void> {
       latestRoomCode = code;
       updateNativeClientCallout(latestBundle, latestRoomCode);
       renderShowcaseChapter(activeChapter);
-      feedback.innerHTML = `Staged <strong>#${code}</strong> (${joined.wake_time_ms}ms wake) � Launch via <code>playable://join/${code}</code> or CLI`;
+      feedback.innerHTML = `Staged <strong>#${code}</strong> (${joined.wake_time_ms}ms wake) � Launch via <code>playable://join/${code}</code> or CLI`;
       appendTelemetry({
         event: 'REALM_ROOM_STAGED',
         room_code: code,
@@ -985,6 +1189,10 @@ async function initApp(): Promise<void> {
   // Handle Prompt Submission (4-Step Streamlined Build Pipeline + Live Doubleword Config Generation)
   const submitBtn = document.getElementById('btn-submit-build') as HTMLButtonElement | null;
   const runPromptBuild = async (promptText: string, cartridgeId: string) => {
+    if (!authService.isAuthenticated) {
+      openAuthModal();
+      return;
+    }
     if (submitBtn) {
       submitBtn.disabled = true;
       submitBtn.textContent = 'Running Doubleword & QA Pipeline...';
@@ -994,24 +1202,35 @@ async function initApp(): Promise<void> {
       try {
         const res = await fetch(`${API_BASE}/api/builds`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: authService.getAuthHeaders(),
           body: JSON.stringify({ prompt: promptText, cartridge_id: cartridgeId }),
         });
 
+        if (res.status === 401) {
+          authService.logout();
+          openAuthModal();
+          showServerAlert('Sign in with Google to build your realm.', 'error');
+          return;
+        }
+
         if (res.status === 402) {
-          let errDetail = 'Insufficient Credits: 3 credits are required to run the build pipeline.';
+          let errDetail = 'Insufficient workspace credits: 3 credits are required to run the build pipeline.';
           try {
             const errJson = (await res.json()) as {
               error?: string;
               credits_remaining?: number;
               required?: number;
             };
+            if (errJson.error) {
+              errDetail = errJson.error;
+            }
             if (typeof errJson.credits_remaining === 'number') {
+              authService.updateCredits(errJson.credits_remaining);
               const creditsEl = document.getElementById('credits-remaining');
               if (creditsEl) {
-                creditsEl.textContent = `${errJson.credits_remaining} / 150`;
+                creditsEl.textContent = `${errJson.credits_remaining} Credits Remaining`;
               }
-              errDetail = `Insufficient Credits: ${errJson.credits_remaining} remaining (${errJson.required ?? 3} required).`;
+              errDetail = `${errJson.error || 'Insufficient workspace credits'}: ${errJson.credits_remaining} remaining (${errJson.required ?? 3} required).`;
             }
           } catch {
             // Keep default 402 message
@@ -1019,7 +1238,7 @@ async function initApp(): Promise<void> {
           showServerAlert(errDetail, 'error');
           const banner = document.getElementById('build-result-banner');
           if (banner) {
-            banner.innerHTML = `<div><strong>⛔ Insufficient Credits (HTTP 402):</strong> ${errDetail}</div>`;
+            banner.innerHTML = `<div><strong>⛔ Insufficient workspace credits (HTTP 402):</strong> ${errDetail}</div>`;
           }
           return;
         }
@@ -1074,7 +1293,7 @@ async function initApp(): Promise<void> {
     } finally {
       if (submitBtn) {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Run Build Pipeline (3 Credits)';
+        submitBtn.textContent = '⚡ Build Realm (3 Credits)';
       }
     }
   };
@@ -1099,8 +1318,45 @@ async function initApp(): Promise<void> {
   });
 
   document.getElementById('btn-hold-l1')?.addEventListener('click', async () => {
+    if (!authService.isAuthenticated) {
+      openAuthModal();
+      return;
+    }
     const voicePrompt =
       'Transform the rig into a Frozen Glacier Fortress with Cryo-Warden Vael (3200 HP) and Ice Lance (290 DMG)';
+    try {
+      const res = await fetch(`${API_BASE}/api/voice-architect`, {
+        method: 'POST',
+        headers: authService.getAuthHeaders(),
+        body: JSON.stringify({
+          prompt: voicePrompt,
+          cartridge_id: 'template-action-rpg',
+        }),
+      });
+      if (res.status === 401) {
+        authService.logout();
+        openAuthModal();
+        showServerAlert('Sign in with Google to use Voice Architect.', 'error');
+        return;
+      }
+      if (res.status === 402) {
+        showServerAlert('Insufficient workspace credits for Voice Architect.', 'error');
+        return;
+      }
+      if (res.ok) {
+        const voiceData = await res.json();
+        if (voiceData.build) {
+          latestBundle = voiceData.build.config_bundle || DEFAULT_CONFIG_BUNDLE;
+          latestRoomCode = voiceData.build.preview_room_code || 'TEST-9999';
+          renderBuildStages(voiceData.build, latestBundle);
+          updateNativeClientCallout(latestBundle, latestRoomCode);
+          renderShowcaseChapter(activeChapter);
+          return;
+        }
+      }
+    } catch {
+      // Fallback to local prompt build
+    }
     await runPromptBuild(voicePrompt, 'template-action-rpg');
   });
 
@@ -1115,15 +1371,22 @@ async function initApp(): Promise<void> {
         <li>• Linux / Steam Deck (x86_64 AppImage) — <code>PlayableLauncher-x86_64.AppImage</code></li>
       </ul>
       <p style="margin-top: 0.5rem;">Launch any downloaded realm directly via CLI:</p>
-      <code style="display: block; padding: 0.6rem; background: #090d16; border-radius: 0.4rem; color: #38bdf8;">playable-client --realm=${latestRoomCode} --pck=${latestBundle.bundle_id}.pck --sandboxed-pck</code>
+      <code style="display: block; padding: 0.6rem; background: #090d16; border-radius: 0.4rem; color: #38bdf8;">playable-client --server=wss://playable-server-yy32pk5s3q-nw.a.run.app/ws</code>
     `;
     dialog.showModal();
   });
 
   document.getElementById('btn-trigger-eject')?.addEventListener('click', async () => {
+    if (!authService.isAuthenticated) {
+      openAuthModal();
+      return;
+    }
     const ejectData = await fetchJsonOrFallback(
       '/api/eject',
-      { method: 'POST' },
+      {
+        method: 'POST',
+        headers: authService.getAuthHeaders(),
+      },
       {
         status: 'EJECT_READY',
         export_repo_url: 'https://github.com/playable-eject/boiling-iron-rig-standalone',
