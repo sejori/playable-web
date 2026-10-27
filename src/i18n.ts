@@ -17,10 +17,10 @@ const STORAGE_KEY = 'tokigen_lang';
 type Dict = Record<string, string>;
 
 const en: Dict = {
-  'meta.title.home': 'tokigen.gg — Your game, your rules, your friends',
+  'meta.title.home': 'tokigen.gg — Build the world, set the rules, bring your friends!',
   'meta.title.studio': 'Web Studio (under construction) — tokigen.gg',
   'meta.description':
-    'Describe the game you want to play. tokigen builds it, tests it and hosts it — then you jump in with your friends.',
+    'The tokigen client is your home to create, share, and join living multiplayer games. Build the world, set the rules, bring your friends!',
 
   'nav.skip': 'Skip to content',
   'nav.label': 'Primary',
@@ -37,11 +37,11 @@ const en: Dict = {
   'brand.home': 'tokigen.gg home',
 
   'hero.eyebrow': 'AI-native multiplayer game creation',
-  'hero.line1': 'Your game,',
-  'hero.line2': 'your rules,',
-  'hero.line3': 'your friends.',
+  'hero.line1': 'Build the world,',
+  'hero.line2': 'set the rules,',
+  'hero.line3': 'bring your friends!',
   'hero.lead':
-    'Describe the game you want to play. tokigen builds it, tests it and hosts it — then you jump in together.',
+    'The tokigen client is your home to create custom games, share room codes, and jump into living multiplayer worlds with your friends.',
   'hero.cta': 'Get Started Now',
   'hero.secondary': 'See how it works',
   'hero.stampLabel': 'Kigen — origin',
@@ -52,7 +52,7 @@ const en: Dict = {
     'An open-source client, our own generative systems and multiplayer servers — three pillars working together.',
   'how.client.title': 'Open-source client',
   'how.client.body':
-    'The tokigen launcher is built on Godot Engine 4 and open-source tech like Jolt Physics, Terrain3D and LimboAI, released under the MIT licence. Your worlds are never locked in.',
+    'The tokigen client is built on Godot Engine 4 and open-source tech like Jolt Physics, Terrain3D, and LimboAI (MIT). Use it to create games with AI, share room codes, and join your friends.',
   'how.gen.title': 'Custom generative systems',
   'how.gen.body':
     'Describe it in your own words. Our generative pipeline designs the game, builds the world procedurally, play-tests it with AI bots and packages it for the launcher.',
@@ -97,7 +97,7 @@ const en: Dict = {
 
   'download.eyebrow': 'Download',
   'download.title': 'Get the tokigen launcher',
-  'download.sub': 'Free. Install once and join any game your friends create.',
+  'download.sub': 'Free. Install once to create games, share room codes, and join your friends.',
   'download.recommended': 'Recommended',
   'download.button': 'Download',
   'download.win.meta': 'Windows 10 / 11 · 64-bit',
@@ -108,7 +108,7 @@ const en: Dict = {
   'community.title': 'Join the community',
   'community.body': 'Share your games, find players and help shape tokigen.',
 
-  'footer.tagline': 'Your game, your rules, your friends.',
+  'footer.tagline': 'Build the world, set the rules, bring your friends!',
   'footer.credit': 'Built with Godot Engine and open source.',
 
   'studio.eyebrow': 'Web Studio',
@@ -127,10 +127,10 @@ const en: Dict = {
 };
 
 const ptBR: Dict = {
-  'meta.title.home': 'tokigen.gg — Seu jogo, suas regras, seus amigos',
+  'meta.title.home': 'tokigen.gg — Construa o mundo, defina as regras, traga seus amigos!',
   'meta.title.studio': 'Estúdio Web (em construção) — tokigen.gg',
   'meta.description':
-    'Descreva o jogo que você quer jogar. O tokigen cria, testa e hospeda — depois é só entrar com seus amigos.',
+    'O cliente tokigen é o seu lugar para criar, compartilhar e jogar mundos multiplayer vivos. Construa o mundo, defina as regras, traga seus amigos!',
 
   'nav.skip': 'Pular para o conteúdo',
   'nav.label': 'Principal',
@@ -147,11 +147,11 @@ const ptBR: Dict = {
   'brand.home': 'Página inicial do tokigen.gg',
 
   'hero.eyebrow': 'Criação de jogos multiplayer com IA',
-  'hero.line1': 'Seu jogo,',
-  'hero.line2': 'suas regras,',
-  'hero.line3': 'seus amigos.',
+  'hero.line1': 'Construa o mundo,',
+  'hero.line2': 'defina as regras,',
+  'hero.line3': 'traga seus amigos!',
   'hero.lead':
-    'Descreva o jogo que você quer jogar. O tokigen cria, testa e hospeda — depois é só entrar com a galera.',
+    'O cliente tokigen é o seu lugar para criar jogos personalizados, compartilhar códigos de sala e jogar mundos multiplayer vivos com seus amigos.',
   'hero.cta': 'Comece agora',
   'hero.secondary': 'Veja como funciona',
   'hero.stampLabel': 'Kigen — origem',
@@ -162,7 +162,7 @@ const ptBR: Dict = {
     'Um cliente de código aberto, sistemas generativos próprios e servidores multiplayer — três pilares trabalhando juntos.',
   'how.client.title': 'Cliente de código aberto',
   'how.client.body':
-    'O launcher do tokigen é construído sobre o Godot Engine 4 e tecnologias abertas como Jolt Physics, Terrain3D e LimboAI, com licença MIT. Seus mundos nunca ficam presos.',
+    'O cliente tokigen é construído sobre o Godot Engine 4 e tecnologias abertas como Jolt Physics, Terrain3D e LimboAI (MIT). Use-o para criar jogos com IA, compartilhar códigos e entrar com a galera.',
   'how.gen.title': 'Sistemas generativos próprios',
   'how.gen.body':
     'Descreva com suas palavras. Nosso pipeline generativo projeta o jogo, constrói o mundo de forma procedural, testa tudo com bots de IA e empacota para o launcher.',
@@ -207,7 +207,7 @@ const ptBR: Dict = {
 
   'download.eyebrow': 'Baixar',
   'download.title': 'Baixe o launcher do tokigen',
-  'download.sub': 'Grátis. Instale uma vez e entre em qualquer jogo criado pelos seus amigos.',
+  'download.sub': 'Grátis. Instale uma vez para criar jogos, compartilhar códigos de sala e jogar com amigos.',
   'download.recommended': 'Recomendado',
   'download.button': 'Baixar',
   'download.win.meta': 'Windows 10 / 11 · 64 bits',
@@ -218,7 +218,7 @@ const ptBR: Dict = {
   'community.title': 'Entre na comunidade',
   'community.body': 'Compartilhe seus jogos, encontre jogadores e ajude a moldar o tokigen.',
 
-  'footer.tagline': 'Seu jogo, suas regras, seus amigos.',
+  'footer.tagline': 'Construa o mundo, defina as regras, traga seus amigos!',
   'footer.credit': 'Feito com Godot Engine e código aberto.',
 
   'studio.eyebrow': 'Estúdio Web',
@@ -237,10 +237,10 @@ const ptBR: Dict = {
 };
 
 const ja: Dict = {
-  'meta.title.home': 'tokigen.gg — 君のゲーム、君のルール、君の仲間',
+  'meta.title.home': 'tokigen.gg — 世界を創り、ルールを決め、仲間を呼ぼう！',
   'meta.title.studio': 'Webスタジオ（工事中）— tokigen.gg',
   'meta.description':
-    '遊びたいゲームを言葉で伝えるだけ。tokigenがゲームを作り、テストし、サーバーまで用意します。あとは仲間と飛び込もう。',
+    'tokigenクライアントは、マルチプレイヤーゲームを創り、共有し、参加できるプラットフォームです。世界を創り、ルールを決め、仲間を呼ぼう！',
 
   'nav.skip': '本文へスキップ',
   'nav.label': 'メインメニュー',
@@ -257,11 +257,11 @@ const ja: Dict = {
   'brand.home': 'tokigen.gg ホーム',
 
   'hero.eyebrow': 'AIネイティブなマルチプレイヤーゲーム制作',
-  'hero.line1': '君のゲーム、',
-  'hero.line2': '君のルール、',
-  'hero.line3': '君の仲間。',
+  'hero.line1': '世界を創り、',
+  'hero.line2': 'ルールを決め、',
+  'hero.line3': '仲間を呼ぼう！',
   'hero.lead':
-    '遊びたいゲームを言葉で伝えるだけ。tokigenがゲームを作り、テストし、サーバーまで用意します。あとは仲間と一緒に飛び込もう。',
+    'tokigenクライアントは、AIと共に独自のゲームを創り、ルームコードで共有し、友達とマルチプレイヤーの世界へ飛び込めるオールインワン環境です。',
   'hero.cta': '今すぐ始める',
   'hero.secondary': '仕組みを見る',
   'hero.stampLabel': '起源',
@@ -271,7 +271,7 @@ const ja: Dict = {
   'how.sub': 'オープンソースのクライアント、独自の生成システム、そしてマルチプレイヤーサーバー。3つの柱で動いています。',
   'how.client.title': 'オープンソースのクライアント',
   'how.client.body':
-    'tokigenランチャーはGodot Engine 4をはじめ、Jolt Physics、Terrain3D、LimboAIなどのオープンソース技術で作られ、MITライセンスで公開されています。作った世界が囲い込まれることはありません。',
+    'tokigenクライアントはGodot Engine 4をはじめ、Jolt Physics、Terrain3D、LimboAI（MITライセンス）で構築。ゲームの制作から、ルームコードの共有、仲間との参加までこれひとつで行えます。',
   'how.gen.title': '独自の生成システム',
   'how.gen.body':
     '普段の言葉で説明するだけ。独自の生成パイプラインがゲームを設計し、ワールドをプロシージャルに構築し、AIボットでプレイテストしてから、ランチャー用にパッケージします。',
@@ -315,7 +315,7 @@ const ja: Dict = {
 
   'download.eyebrow': 'ダウンロード',
   'download.title': 'tokigenランチャーを入手',
-  'download.sub': '無料。一度インストールすれば、仲間が作ったどんなゲームにも参加できます。',
+  'download.sub': '無料。一度インストールすれば、ゲームの制作、共有、仲間とのプレイがすべて可能になります。',
   'download.recommended': 'おすすめ',
   'download.button': 'ダウンロード',
   'download.win.meta': 'Windows 10 / 11 · 64ビット',
@@ -326,7 +326,7 @@ const ja: Dict = {
   'community.title': 'コミュニティに参加',
   'community.body': 'ゲームを共有して、仲間を見つけて、tokigenを一緒に作ろう。',
 
-  'footer.tagline': '君のゲーム、君のルール、君の仲間。',
+  'footer.tagline': '世界を創り、ルールを決め、仲間を呼ぼう！',
   'footer.credit': 'Godot Engineとオープンソースで構築。',
 
   'studio.eyebrow': 'Webスタジオ',

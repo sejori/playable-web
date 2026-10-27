@@ -172,12 +172,12 @@ async function generateAssets() {
 
     <div class="main">
       <div class="headline">
-        <span class="hl-white">Your game,</span><br>
-        <span class="hl-red">your rules,</span><br>
-        <span class="hl-blue">your friends.</span>
+        <span class="hl-white">Build the world,</span><br>
+        <span class="hl-red">set the rules,</span><br>
+        <span class="hl-blue">bring your friends!</span>
       </div>
       <p class="lead">
-        Describe the game you want to play. tokigen builds it, tests it and hosts it — then you jump in together.
+        The tokigen client is your home to create, share, and join living multiplayer games with your friends.
       </p>
     </div>
 
