@@ -84,15 +84,15 @@ const en: Dict = {
   'showcase.eyebrow': 'Showcase',
   'showcase.title': 'One prompt. One playable world.',
   'showcase.sub':
-    'Our Fire Rig demo started life as this prompt. The video is recorded straight from the tokigen launcher.',
+    'Generated dynamically by our 4-agent development team (Jenny, Jane, John, Geoff). The video is recorded straight from the launcher.',
   'showcase.promptLabel': 'Your prompt',
   'showcase.prompt':
-    'Build a prison break on a boiling iron rig out at sea. I want to bend metal from the coal vents into a shield, then take down the Fire Warden boss with my friends.',
+    'Build a frostbound titan fortress atop Glacial Peak. I want to shatter cryo-crystals to forge an ice shield, then scale the ramparts to defeat Cryo-Warden Vael in a blizzard with my allies.',
   'showcase.step1': 'Designed',
   'showcase.step2': 'World built',
   'showcase.step3': 'Bot-tested',
   'showcase.step4': 'Ready to play',
-  'showcase.resultLabel': 'Result: Rigbreak — The Boiling Iron',
+  'showcase.resultLabel': 'Result: Glacial Peak — Frostbound Titan Fortress',
   'showcase.videoLabel': 'Gameplay recorded in the tokigen launcher',
 
   'download.eyebrow': 'Download',
@@ -194,15 +194,15 @@ const ptBR: Dict = {
   'showcase.eyebrow': 'Vitrine',
   'showcase.title': 'Um prompt. Um mundo jogável.',
   'showcase.sub':
-    'Nossa demo do Fire Rig nasceu deste prompt. O vídeo foi gravado direto no launcher do tokigen.',
+    'Gerado dinamicamente pela nossa equipe de 4 agentes (Jenny, Jane, John, Geoff). O vídeo é gravado direto do launcher.',
   'showcase.promptLabel': 'Seu prompt',
   'showcase.prompt':
-    'Crie uma fuga de prisão numa plataforma de ferro fervente no meio do mar. Quero dobrar o metal das saídas de carvão para fazer um escudo e derrotar o chefão Guardião de Fogo com meus amigos.',
+    'Construa uma fortaleza de titãs congelada no topo do Pico Glacial. Quero quebrar cristais de gelo para forjar um escudo, escalar as muralhas e derrotar o Guardião Cryo Vael numa nevasca com meus amigos.',
   'showcase.step1': 'Projetado',
   'showcase.step2': 'Mundo construído',
   'showcase.step3': 'Testado por bots',
   'showcase.step4': 'Pronto para jogar',
-  'showcase.resultLabel': 'Resultado: Rigbreak — The Boiling Iron',
+  'showcase.resultLabel': 'Resultado: Glacial Peak — Frostbound Titan Fortress',
   'showcase.videoLabel': 'Gameplay gravado no launcher do tokigen',
 
   'download.eyebrow': 'Baixar',
@@ -302,15 +302,16 @@ const ja: Dict = {
 
   'showcase.eyebrow': 'ショーケース',
   'showcase.title': 'プロンプトひとつで、遊べる世界に。',
-  'showcase.sub': '炎のリグのデモは、このプロンプトから生まれました。映像はtokigenランチャーで実際に録画したものです。',
+  'showcase.sub':
+    '4エージェントの開発チーム（Jenny、Jane、John、Geoff）によって自律生成。映像はランチャーから直接録画したものです。',
   'showcase.promptLabel': 'あなたのプロンプト',
   'showcase.prompt':
-    '海に浮かぶ灼熱の鉄のリグで脱獄するゲームを作って。石炭の噴出口から金属を操って盾にし、仲間と一緒に炎の看守ボスを倒したい。',
+    '氷河の峰の頂上にある氷結のタイタン要塞を作って。クライオクリスタルを砕いて氷の盾を作り、城壁を登って仲間と吹雪の中でクライオ看守ヴァエルを倒したい。',
   'showcase.step1': '設計完了',
   'showcase.step2': 'ワールド構築',
   'showcase.step3': 'ボットでテスト済み',
   'showcase.step4': 'プレイ準備OK',
-  'showcase.resultLabel': '結果：Rigbreak — The Boiling Iron',
+  'showcase.resultLabel': '結果：Glacial Peak — Frostbound Titan Fortress',
   'showcase.videoLabel': 'tokigenランチャーで録画したゲームプレイ',
 
   'download.eyebrow': 'ダウンロード',
