@@ -92,7 +92,7 @@ const en: Dict = {
   'showcase.step2': 'World built',
   'showcase.step3': 'Bot-tested',
   'showcase.step4': 'Ready to play',
-  'showcase.resultLabel': 'Result: Rigbreak: The Boiling Iron',
+  'showcase.resultLabel': 'Result: Sunken Coral Temple',
   'showcase.videoLabel': 'Gameplay recorded in the tokigen launcher',
 
   'download.eyebrow': 'Download',
@@ -202,7 +202,7 @@ const ptBR: Dict = {
   'showcase.step2': 'Mundo construído',
   'showcase.step3': 'Testado por bots',
   'showcase.step4': 'Pronto para jogar',
-  'showcase.resultLabel': 'Resultado: Glacial Peak — Frostbound Titan Fortress',
+  'showcase.resultLabel': 'Resultado: Templo de Coral Submerso',
   'showcase.videoLabel': 'Gameplay gravado no launcher do tokigen',
 
   'download.eyebrow': 'Baixar',
@@ -311,7 +311,7 @@ const ja: Dict = {
   'showcase.step2': 'ワールド構築',
   'showcase.step3': 'ボットでテスト済み',
   'showcase.step4': 'プレイ準備OK',
-  'showcase.resultLabel': '結果：Glacial Peak — Frostbound Titan Fortress',
+  'showcase.resultLabel': '結果：海底の珊瑚寺院（Sunken Coral Temple）',
   'showcase.videoLabel': 'tokigenランチャーで録画したゲームプレイ',
 
   'download.eyebrow': 'ダウンロード',
