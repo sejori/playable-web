@@ -87,12 +87,12 @@ const en: Dict = {
     'Generated dynamically by our 4-agent development team (Jenny, Jane, John, Geoff). The video is recorded straight from the launcher.',
   'showcase.promptLabel': 'Your prompt',
   'showcase.prompt':
-    'Build a frostbound titan fortress atop Glacial Peak. I want to shatter cryo-crystals to forge an ice shield, then scale the ramparts to defeat Cryo-Warden Vael in a blizzard with my allies.',
+    'Create an ancient sunken coral temple in the Abyssal Trenches where players manipulate deep-sea thermal currents into a hydro-barrier to defeat the Leviathan Abyssal Warden.',
   'showcase.step1': 'Designed',
   'showcase.step2': 'World built',
   'showcase.step3': 'Bot-tested',
   'showcase.step4': 'Ready to play',
-  'showcase.resultLabel': 'Result: Glacial Peak — Frostbound Titan Fortress',
+  'showcase.resultLabel': 'Result: Rigbreak: The Boiling Iron',
   'showcase.videoLabel': 'Gameplay recorded in the tokigen launcher',
 
   'download.eyebrow': 'Download',
