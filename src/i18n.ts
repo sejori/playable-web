@@ -92,7 +92,7 @@ const en: Dict = {
   'showcase.step2': 'World built',
   'showcase.step3': 'Bot-tested',
   'showcase.step4': 'Ready to play',
-  'showcase.resultLabel': 'Result: The Boiling Iron Rig',
+  'showcase.resultLabel': 'Result: Rigbreak — The Boiling Iron',
   'showcase.videoLabel': 'Gameplay recorded in the tokigen launcher',
 
   'download.eyebrow': 'Download',
@@ -202,7 +202,7 @@ const ptBR: Dict = {
   'showcase.step2': 'Mundo construído',
   'showcase.step3': 'Testado por bots',
   'showcase.step4': 'Pronto para jogar',
-  'showcase.resultLabel': 'Resultado: The Boiling Iron Rig',
+  'showcase.resultLabel': 'Resultado: Rigbreak — The Boiling Iron',
   'showcase.videoLabel': 'Gameplay gravado no launcher do tokigen',
 
   'download.eyebrow': 'Baixar',
@@ -310,7 +310,7 @@ const ja: Dict = {
   'showcase.step2': 'ワールド構築',
   'showcase.step3': 'ボットでテスト済み',
   'showcase.step4': 'プレイ準備OK',
-  'showcase.resultLabel': '結果：The Boiling Iron Rig',
+  'showcase.resultLabel': '結果：Rigbreak — The Boiling Iron',
   'showcase.videoLabel': 'tokigenランチャーで録画したゲームプレイ',
 
   'download.eyebrow': 'ダウンロード',
