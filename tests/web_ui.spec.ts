@@ -265,4 +265,28 @@ test.describe('tokigen.gg Web Suite', () => {
     await expect(page.getByText('3D asset viewer')).toBeVisible();
     await expect(page.getByText('Share pages')).toBeVisible();
   });
+
+  test('Mobile viewports have zero horizontal overflow across showcase and page flow', async ({ page }) => {
+    for (const width of [320, 375, 390, 414]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto('./');
+
+      const overflow = await page.evaluate(() => {
+        const docW = document.documentElement.clientWidth;
+        const scrollW = document.documentElement.scrollWidth;
+        const bodyScrollW = document.body.scrollWidth;
+        const showcase = document.getElementById('showcase');
+        const showcaseScrollW = showcase ? showcase.scrollWidth : 0;
+        return {
+          docW,
+          scrollW,
+          bodyScrollW,
+          showcaseScrollW,
+          hasHorizontalScroll: scrollW > docW || bodyScrollW > docW,
+        };
+      });
+
+      expect(overflow.hasHorizontalScroll, `Horizontal overflow detected at viewport ${width}px: scrollWidth=${overflow.scrollW}, clientWidth=${overflow.docW}`).toBeFalsy();
+    }
+  });
 });

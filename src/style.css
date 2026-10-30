@@ -106,6 +106,7 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  overflow-x: clip;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -116,6 +117,7 @@ html {
 
 body {
   margin: 0;
+  overflow-x: clip;
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-body);
@@ -615,7 +617,7 @@ h2.brush-title,
 /* ---------- Hero ---------- */
 .hero {
   position: relative;
-  overflow: hidden;
+  overflow: clip;
   isolation: isolate;
   display: grid;
   align-items: center;
@@ -751,8 +753,7 @@ h2.brush-title,
   text-align: center;
 }
 .section-header .eyebrow {
-  display: flex;
-  justify-content: center;
+  display: inline-flex;
 }
 .section-sub {
   margin-top: 1.25rem;
@@ -955,6 +956,20 @@ h2.brush-title,
 @media (max-width: 900px) {
   .showcase-grid {
     grid-template-columns: 1fr;
+  }
+  .video-frame {
+    box-shadow:
+      var(--elev-3),
+      0 8px 0 var(--red-solid);
+  }
+}
+@media (max-width: 640px) {
+  .prompt-card {
+    padding: 1.25rem 1rem;
+  }
+  .prompt-bubble {
+    padding: 0.95rem 1rem;
+    font-size: 1rem;
   }
 }
 
