@@ -1,4 +1,5 @@
 import { applyLanguage, detectLanguage, getLanguage, isLang, t } from './i18n';
+import { initShowcaseCarousel } from './showcase';
 
 const prefersReducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -104,7 +105,8 @@ function initDownloads(): void {
 function initPromptTyping(): void {
   const card = document.querySelector<HTMLElement>('.prompt-card');
   const typed = card?.querySelector<HTMLElement>('.prompt-typed');
-  if (!card || !typed) return;
+  const prompt = document.getElementById('showcase-prompt');
+  if (!card || !typed || !prompt) return;
 
   let timer = 0;
   let started = false;
@@ -119,10 +121,10 @@ function initPromptTyping(): void {
   const run = () => {
     started = true;
     if (prefersReducedMotion.matches) return finish();
-    const text = t('showcase.prompt');
+    const text = prompt.textContent || t('showcase.prompt');
     // Iterate by code point so Japanese / emoji never split mid-character.
     const chars = Array.from(text);
-    const step = getLanguage() === 'ja' ? 55 : 22;
+    const step = getLanguage() === 'ja' ? 50 : 20;
     let i = 0;
     card.classList.remove('is-complete');
     card.classList.add('is-typing');
@@ -192,3 +194,4 @@ initMenu();
 initDownloads();
 initPromptTyping();
 initShowcaseVideo();
+initShowcaseCarousel();

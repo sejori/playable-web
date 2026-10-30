@@ -880,6 +880,72 @@ h2.brush-title,
   background: var(--surface-2);
   border-block: 1px solid var(--border);
 }
+
+.showcase-tabs-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: clamp(1.5rem, 3.5vw, 2.5rem);
+}
+.showcase-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  max-width: 960px;
+}
+.showcase-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 1.05rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+  user-select: none;
+}
+.showcase-tab:hover {
+  background: var(--surface-2);
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--blue) 55%, var(--border));
+  transform: translateY(-1px);
+}
+.showcase-tab.is-active {
+  background: color-mix(in srgb, var(--blue) 14%, var(--surface));
+  color: var(--text);
+  border-color: var(--blue);
+  box-shadow:
+    var(--elev-1),
+    0 0 14px color-mix(in srgb, var(--blue) 25%, transparent);
+}
+.showcase-tab:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+.tab-cartridge {
+  display: inline-block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  background: var(--surface-2);
+  color: var(--blue);
+}
+.showcase-tab.is-active .tab-cartridge {
+  background: var(--blue-solid);
+  color: #fff;
+}
+
 .showcase-grid {
   display: grid;
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
@@ -899,10 +965,74 @@ h2.brush-title,
 .prompt-head {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  justify-content: space-between;
+  gap: 0.75rem;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.prompt-head-left {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.prompt-head-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
   font-weight: 700;
 }
+.showcase-badge {
+  display: inline-block;
+  padding: 0.16rem 0.65rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--red) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--red) 40%, transparent);
+  color: var(--red);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.copy-prompt-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+.copy-prompt-btn:hover {
+  background: var(--surface-2);
+  color: var(--text);
+  border-color: var(--blue);
+  transform: translateY(-1px);
+}
+.copy-prompt-btn:active {
+  transform: translateY(1px);
+}
+.copy-prompt-btn:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+.copy-prompt-btn.is-copied {
+  background: color-mix(in srgb, #34c759 14%, var(--surface));
+  border-color: #34c759;
+  color: #34c759;
+}
+.copy-prompt-btn svg {
+  flex: none;
+}
+
 .prompt-avatar {
   display: grid;
   place-items: center;
@@ -921,6 +1051,7 @@ h2.brush-title,
   background: var(--blue-tint);
   font-size: 1.08rem;
   line-height: 1.55;
+  min-height: 5.5rem;
 }
 .prompt-bubble > p {
   grid-area: 1 / 1;
@@ -1053,6 +1184,69 @@ h2.brush-title,
   color: var(--text-muted);
   font-weight: 600;
   text-align: center;
+  font-size: 1rem;
+}
+.showcase-caption-title {
+  color: var(--text);
+  font-weight: 700;
+}
+.showcase-caption-sep {
+  opacity: 0.5;
+}
+.showcase-caption-result {
+  color: var(--text-muted);
+}
+
+/* Carousel Prev / Dots / Next Controls */
+.carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-top: clamp(1.5rem, 3.5vw, 2.5rem);
+}
+.carousel-nav-btn {
+  width: 44px;
+  height: 44px;
+  transition:
+    transform 0.15s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+.carousel-nav-btn:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  transform: scale(1.06);
+}
+.carousel-nav-btn:active {
+  transform: scale(0.95);
+}
+.carousel-dots {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.carousel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: none;
+  background: var(--border);
+  cursor: pointer;
+  padding: 0;
+  transition:
+    width 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.carousel-dot:hover {
+  background: var(--text-muted);
+}
+.carousel-dot.is-active {
+  width: 32px;
+  background: var(--red-solid);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--red) 50%, transparent);
 }
 
 /* Download */

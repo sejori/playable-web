@@ -142,14 +142,123 @@
             </p>
           </header>
 
-          <div class="showcase-grid">
+          <!-- Template selector pills / tabs -->
+          <div class="showcase-tabs-container">
+            <nav class="showcase-tabs" role="tablist" aria-label="Starter template selector">
+              <button
+                type="button"
+                role="tab"
+                class="showcase-tab is-active"
+                data-index="0"
+                data-slug="action-rpg"
+                id="tab-action-rpg"
+                aria-selected="true"
+                aria-controls="showcase-carousel-panel"
+              >
+                <span class="tab-cartridge">01</span>
+                <span class="tab-label">Action RPG</span>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                class="showcase-tab"
+                data-index="1"
+                data-slug="tick-sandbox"
+                id="tab-tick-sandbox"
+                aria-selected="false"
+                aria-controls="showcase-carousel-panel"
+                tabindex="-1"
+              >
+                <span class="tab-cartridge">02</span>
+                <span class="tab-label">Tick Sandbox</span>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                class="showcase-tab"
+                data-index="2"
+                data-slug="voxel-survival"
+                id="tab-voxel-survival"
+                aria-selected="false"
+                aria-controls="showcase-carousel-panel"
+                tabindex="-1"
+              >
+                <span class="tab-cartridge">03</span>
+                <span class="tab-label">Voxel Survival</span>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                class="showcase-tab"
+                data-index="3"
+                data-slug="4x-strategy"
+                id="tab-4x-strategy"
+                aria-selected="false"
+                aria-controls="showcase-carousel-panel"
+                tabindex="-1"
+              >
+                <span class="tab-cartridge">04</span>
+                <span class="tab-label">4X Strategy</span>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                class="showcase-tab"
+                data-index="4"
+                data-slug="arena-fps"
+                id="tab-arena-fps"
+                aria-selected="false"
+                aria-controls="showcase-carousel-panel"
+                tabindex="-1"
+              >
+                <span class="tab-cartridge">05</span>
+                <span class="tab-label">Arena FPS</span>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                class="showcase-tab"
+                data-index="5"
+                data-slug="collector-tycoon"
+                id="tab-collector-tycoon"
+                aria-selected="false"
+                aria-controls="showcase-carousel-panel"
+                tabindex="-1"
+              >
+                <span class="tab-cartridge">06</span>
+                <span class="tab-label">Collector Tycoon</span>
+              </button>
+            </nav>
+          </div>
+
+          <div class="showcase-grid" id="showcase-carousel-panel" role="region" aria-label="Template showcase carousel">
             <figure class="card prompt-card reveal">
               <figcaption class="prompt-head">
-                <span class="prompt-avatar" aria-hidden="true">君</span>
-                <span data-i18n="showcase.promptLabel">Your prompt</span>
+                <div class="prompt-head-left">
+                  <span class="prompt-avatar" aria-hidden="true">君</span>
+                  <div class="prompt-head-meta">
+                    <span data-i18n="showcase.promptLabel">Your prompt</span>
+                    <span id="showcase-badge" class="showcase-badge">Action RPG</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  id="copy-prompt-btn"
+                  class="copy-prompt-btn"
+                  data-i18n-attr="aria-label:showcase.copyPrompt"
+                  aria-label="Copy prompt to clipboard"
+                >
+                  <svg class="copy-icon" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                    <path fill="currentColor" d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                  </svg>
+                  <svg class="check-icon" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" style="display:none;">
+                    <path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M20 6L9 17l-5-5"/>
+                  </svg>
+                  <span class="copy-text" data-i18n="showcase.copyPrompt">Copy Prompt</span>
+                </button>
               </figcaption>
               <blockquote class="prompt-bubble">
-                <p id="showcase-prompt" class="prompt-text" data-i18n="showcase.prompt">Create an ancient sunken coral temple in the Abyssal Trenches where players manipulate deep-sea thermal currents into a hydro-barrier to defeat the Leviathan Abyssal Warden.</p>
+                <p id="showcase-prompt" class="prompt-text">Create a dark volcanic cathedral abyss with cracked obsidian pavers, glowing lava hazard vents, and an enraged monolithic Golem Brute guarding the central seal.</p>
                 <p class="prompt-typed" aria-hidden="true"></p>
               </blockquote>
               <ol class="pipeline">
@@ -170,17 +279,55 @@
                   loop
                   playsinline
                   preload="metadata"
-                  poster="./showcase/arena-poster.jpg"
+                  poster="./showcase/action-rpg-poster.jpg"
                   data-i18n-attr="aria-label:showcase.videoLabel"
                   aria-label="Gameplay recorded in the tokigen launcher"
                 >
-                  <source src="./showcase/arena-showcase.webm" type="video/webm" />
-                  <source src="./showcase/arena-showcase.mp4" type="video/mp4" />
+                  <source src="./showcase/action-rpg.webm" type="video/webm" />
+                  <source src="./showcase/action-rpg.mp4" type="video/mp4" />
                 </video>
                 <span class="video-badge"><span class="rec-dot" aria-hidden="true"></span>REC</span>
               </div>
-              <figcaption class="video-caption" data-i18n="showcase.resultLabel">Result: Sunken Coral Temple</figcaption>
+              <figcaption class="video-caption">
+                <span id="showcase-title" class="showcase-caption-title">Action-RPG Dungeon Crawler</span>
+                <span class="showcase-caption-sep" aria-hidden="true"> — </span>
+                <span id="showcase-result" class="showcase-caption-result">Result: Volcanic Golem Abyss</span>
+              </figcaption>
             </figure>
+          </div>
+
+          <!-- Carousel Controls: Prev, Dots, Next -->
+          <div class="carousel-controls" aria-label="Showcase carousel navigation">
+            <button
+              type="button"
+              id="showcase-prev"
+              class="icon-btn carousel-nav-btn"
+              data-i18n-attr="aria-label:showcase.prev"
+              aria-label="Previous template"
+            >
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                <path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <div id="showcase-dots" class="carousel-dots" role="tablist" aria-label="Showcase slides">
+              <button type="button" class="carousel-dot is-active" data-index="0" aria-label="Template 1: Action RPG" aria-current="true"></button>
+              <button type="button" class="carousel-dot" data-index="1" aria-label="Template 2: Tick Sandbox" aria-current="false"></button>
+              <button type="button" class="carousel-dot" data-index="2" aria-label="Template 3: Voxel Survival" aria-current="false"></button>
+              <button type="button" class="carousel-dot" data-index="3" aria-label="Template 4: 4X Strategy" aria-current="false"></button>
+              <button type="button" class="carousel-dot" data-index="4" aria-label="Template 5: Arena FPS" aria-current="false"></button>
+              <button type="button" class="carousel-dot" data-index="5" aria-label="Template 6: Collector Tycoon" aria-current="false"></button>
+            </div>
+            <button
+              type="button"
+              id="showcase-next"
+              class="icon-btn carousel-nav-btn"
+              data-i18n-attr="aria-label:showcase.next"
+              aria-label="Next template"
+            >
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                <path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
           </div>
         </div>
       </section>

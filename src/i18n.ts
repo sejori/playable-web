@@ -94,6 +94,10 @@ const en: Dict = {
   'showcase.step4': 'Ready to play',
   'showcase.resultLabel': 'Result: Sunken Coral Temple',
   'showcase.videoLabel': 'Gameplay recorded in the tokigen launcher',
+  'showcase.copyPrompt': 'Copy Prompt',
+  'showcase.copied': 'Copied!',
+  'showcase.prev': 'Previous template',
+  'showcase.next': 'Next template',
 
   'download.eyebrow': 'Download',
   'download.title': 'Get the tokigen launcher',
@@ -204,6 +208,10 @@ const ptBR: Dict = {
   'showcase.step4': 'Pronto para jogar',
   'showcase.resultLabel': 'Resultado: Templo de Coral Submerso',
   'showcase.videoLabel': 'Gameplay gravado no launcher do tokigen',
+  'showcase.copyPrompt': 'Copiar prompt',
+  'showcase.copied': 'Copiado!',
+  'showcase.prev': 'Modelo anterior',
+  'showcase.next': 'Próximo modelo',
 
   'download.eyebrow': 'Baixar',
   'download.title': 'Baixe o launcher do tokigen',
@@ -313,6 +321,10 @@ const ja: Dict = {
   'showcase.step4': 'プレイ準備OK',
   'showcase.resultLabel': '結果：海底の珊瑚寺院（Sunken Coral Temple）',
   'showcase.videoLabel': 'tokigenランチャーで録画したゲームプレイ',
+  'showcase.copyPrompt': 'プロンプトをコピー',
+  'showcase.copied': 'コピーしました！',
+  'showcase.prev': '前のテンプレート',
+  'showcase.next': '次のテンプレート',
 
   'download.eyebrow': 'ダウンロード',
   'download.title': 'tokigenランチャーを入手',

@@ -68,23 +68,102 @@ test.describe('tokigen.gg Web Suite', () => {
     await expect(templates.getByText('Tycoon & racer')).toBeVisible();
   });
 
-  test('Showcase section displays prompt and embedded video with relative sources', async ({ page }) => {
+  test('Showcase section displays interactive template carousel with relative sources', async ({ page }) => {
     await page.goto('./');
     const showcase = page.locator('#showcase');
     await expect(showcase).toBeVisible();
 
-    // Prompt sample card
+    // Template selector tabs
+    const tabs = showcase.locator('.showcase-tab');
+    await expect(tabs).toHaveCount(6);
+    await expect(tabs.nth(0)).toHaveClass(/is-active/);
+    await expect(tabs.nth(0)).toContainText('Action RPG');
+
+    // Initial slide badge and prompt
+    const badge = showcase.locator('#showcase-badge');
+    await expect(badge).toHaveText('Action RPG');
+
+    const title = showcase.locator('#showcase-title');
+    await expect(title).toHaveText('Action-RPG Dungeon Crawler');
+
+    const result = showcase.locator('#showcase-result');
+    await expect(result).toHaveText('Result: Volcanic Golem Abyss');
+
     const promptBubble = showcase.locator('#showcase-prompt');
     await expect(promptBubble).toBeVisible();
-    const promptText = await promptBubble.textContent();
-    expect(promptText && promptText.trim().length > 10).toBeTruthy();
+    await expect(promptBubble).toContainText('dark volcanic cathedral abyss');
 
-    // Video player
+    // Video player initial sources (strictly relative per Rule 2.3)
     const video = page.locator('#demo-showcase-video');
     await expect(video).toBeVisible();
-    await expect(video.locator('source[type="video/webm"]')).toHaveAttribute('src', './showcase/arena-showcase.webm');
-    await expect(video.locator('source[type="video/mp4"]')).toHaveAttribute('src', './showcase/arena-showcase.mp4');
-    await expect(video).toHaveAttribute('poster', './showcase/arena-poster.jpg');
+    await expect(video.locator('source[type="video/webm"]')).toHaveAttribute('src', './showcase/action-rpg.webm');
+    await expect(video.locator('source[type="video/mp4"]')).toHaveAttribute('src', './showcase/action-rpg.mp4');
+    await expect(video).toHaveAttribute('poster', './showcase/action-rpg-poster.jpg');
+
+    // Next button navigates to slide 2: Tick Sandbox
+    const nextBtn = showcase.locator('#showcase-next');
+    await nextBtn.click();
+
+    await expect(tabs.nth(1)).toHaveClass(/is-active/);
+    await expect(badge).toHaveText('Tick Sandbox');
+    await expect(title).toHaveText('Tick-Based MMO Sandbox');
+    await expect(result).toHaveText('Result: Medieval Lumbridge Square');
+    await expect(promptBubble).toContainText('medieval village square');
+    await expect(video.locator('source[type="video/webm"]')).toHaveAttribute('src', './showcase/tick-sandbox.webm');
+    await expect(video.locator('source[type="video/mp4"]')).toHaveAttribute('src', './showcase/tick-sandbox.mp4');
+    await expect(video).toHaveAttribute('poster', './showcase/tick-sandbox-poster.jpg');
+
+    // Switching via tab click: jump directly to Arena FPS (index 4)
+    const arenaTab = showcase.locator('#tab-arena-fps');
+    await arenaTab.click();
+
+    await expect(arenaTab).toHaveClass(/is-active/);
+    await expect(badge).toHaveText('Arena FPS');
+    await expect(title).toHaveText('Arena Hero FPS');
+    await expect(result).toHaveText('Result: Sci-Fi Bunker Arena');
+    await expect(promptBubble).toContainText('high-octane 3-lane sci-fi industrial arena');
+    await expect(video.locator('source[type="video/webm"]')).toHaveAttribute('src', './showcase/arena-fps.webm');
+    await expect(video.locator('source[type="video/mp4"]')).toHaveAttribute('src', './showcase/arena-fps.mp4');
+    await expect(video).toHaveAttribute('poster', './showcase/arena-fps-poster.jpg');
+
+    // Switching via dot click: jump to Collector Tycoon (index 5)
+    const dots = showcase.locator('.carousel-dot');
+    await expect(dots).toHaveCount(6);
+    await dots.nth(5).click();
+
+    await expect(dots.nth(5)).toHaveClass(/is-active/);
+    await expect(badge).toHaveText('Collector Tycoon');
+    await expect(result).toHaveText('Result: Neon Speedway Tycoon');
+    await expect(video.locator('source[type="video/webm"]')).toHaveAttribute('src', './showcase/collector-tycoon.webm');
+
+    // Previous button goes back to Arena FPS (index 4)
+    const prevBtn = showcase.locator('#showcase-prev');
+    await prevBtn.click();
+    await expect(badge).toHaveText('Arena FPS');
+
+    // Copy Prompt button copies prompt and gives visual feedback
+    const copyBtn = showcase.locator('#copy-prompt-btn');
+    await expect(copyBtn).toBeVisible();
+    await copyBtn.click();
+    await expect(copyBtn).toHaveClass(/is-copied/);
+    await expect(copyBtn.locator('.copy-text')).toHaveText('Copied!');
+
+    // Invariant Rule 2.3 check across all 6 templates: none use leading slash
+    for (let i = 0; i < 6; i++) {
+      await dots.nth(i).click();
+      const webmSrc = await video.locator('source[type="video/webm"]').getAttribute('src');
+      const mp4Src = await video.locator('source[type="video/mp4"]').getAttribute('src');
+      const posterSrc = await video.getAttribute('poster');
+
+      expect(webmSrc?.startsWith('./showcase/')).toBeTruthy();
+      expect(webmSrc?.startsWith('/showcase/')).toBeFalsy();
+
+      expect(mp4Src?.startsWith('./showcase/')).toBeTruthy();
+      expect(mp4Src?.startsWith('/showcase/')).toBeFalsy();
+
+      expect(posterSrc?.startsWith('./showcase/')).toBeTruthy();
+      expect(posterSrc?.startsWith('/showcase/')).toBeFalsy();
+    }
   });
 
   test('Download section offers TokigenLauncher for Windows, macOS, Linux', async ({ page }) => {
